@@ -10,6 +10,7 @@ extern "C" {
 
 /*
 TODO decide if line completion detection is best in step or main loop or elsewhere
+TODO check collision in pivot
 */
 
 using namespace std;
@@ -18,10 +19,6 @@ int main() {
 
 	const float DROPTIME = 0.75;
 	float dropTime = DROPTIME; // time to drop one space
-
-	shape *falling = nullptr;
-	// falling = randomPiece();
-	// optional<tile> history[gWidth][gHeight];
 	game g;
 
 	InitWindow(gWidth * cellSize, gHeight * cellSize, "Jewel Dropper");
@@ -45,16 +42,14 @@ int main() {
 		if (dropTime <= 0 || IsKeyPressed(KEY_DOWN)) {
 			dropTime = DROPTIME;
 			g.step();
-			// drop tiles
 		}
 
 		// draw
 		for (int y = 0; y < gHeight; y++) {
 			for (int x = 0; x < gWidth; x++) {
 				DrawRectangleLines(x * cellSize, y * cellSize, cellSize, cellSize, WHITE);
-				if (g.isOccupied(x, y)) {
+				if (g.isOccupied(x, y))
 					g.tileAt(x, y).rawDraw(x, y);
-				}
 			}
 		}
 

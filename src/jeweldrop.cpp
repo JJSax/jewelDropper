@@ -2,6 +2,7 @@
 #include <vector>
 #include <optional>
 #include <random>
+#include <set>
 
 using namespace std;
 
@@ -57,7 +58,6 @@ void shape::pivot(optional<tile> history[][gHeight]) {
 		int newY = y + newOY;
 		if (newX < 0 || newX >= gWidth || newY >= gHeight || history[x][y].has_value()) {
 			// dont do anything with the new coords
-			// cout << newX << "," << newY << "," << history[x][y].has_value() << endl;
 			return;
 		}
 		newPos.emplace_back(newOX, newOY);
@@ -190,13 +190,36 @@ bool game::isOccupied(int x, int y) {
 	return history[x][y].has_value();
 }
 
+void game::removeRowIfCompleted(int y) {
+	for (int x = 0; x < gWidth; x++) {
+		if (!isOccupied(x, y)) {
+			return;
+		}
+	}
+	for (int i = y; i > 0; i--) {
+		for (int x = 0; x < gWidth; x++) {
+			history[x][i] = history[x][i-1];
+		}
+	}
+	for (int x = 0; x < gWidth; x++) {
+		history[x][0].reset();
+	}
+}
+
 void game::step() {
 	if (!currentPiece->step(history)) return; // if cannot move down
+	set<int> rowsAffected;
+
 	for (int i = 0; i < currentPiece->tiles.size(); i++) {
+		// settle pieces into history
 		int tx = currentPiece->x + currentPiece->tiles[i].ox;
 		int ty = currentPiece->y + currentPiece->tiles[i].oy;
 		history[tx][ty] = currentPiece->tiles[i];
+		rowsAffected.insert(ty);
+	}
 
+	for (auto row : rowsAffected) {
+		removeRowIfCompleted(row);
 	}
 	delete currentPiece;
 	currentPiece = randomPiece();

@@ -48,6 +48,7 @@ public:
 
 class game {
     std::optional<tile> history[gWidth][gHeight];
+    void removeRowIfCompleted(int y);
 public:
     game();
     shape *currentPiece;
