@@ -49,12 +49,29 @@ void shape::shift(shiftDir LR, optional<tile> history[][gHeight]) {
 }
 
 void shape::pivot(optional<tile> history[][gHeight]) {
-	//! CHECK THROUGH HISTORY
-	for (int i = 1; i < tiles.size(); i++)
-	{
-		int c = tiles[i].ox;
-		tiles[i].ox = -tiles[i].oy;
-		tiles[i].oy =  c;
+	vector<pair<int, int>> newPos;
+	for (int i = 1; i < tiles.size(); i++) {
+		int newOX = -tiles[i].oy;
+		int newOY = tiles[i].ox;
+		int newX = x + newOX;
+		int newY = y + newOY;
+		if (newX < 0 || newX >= gWidth || newY >= gHeight || history[x][y].has_value()) {
+			// dont do anything with the new coords
+			// cout << newX << "," << newY << "," << history[x][y].has_value() << endl;
+			return;
+		}
+		newPos.emplace_back(newOX, newOY);
+	}
+
+	auto tIter = tiles.begin();
+	tIter++; // skip origin block
+
+	auto nIter = newPos.begin();
+	while (tIter != tiles.end() && nIter != newPos.end()) {
+		tIter->ox = nIter->first;
+		tIter->oy = nIter->second;
+		tIter++;
+		nIter++;
 	}
 }
 
