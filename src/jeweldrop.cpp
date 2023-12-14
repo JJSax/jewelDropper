@@ -56,7 +56,7 @@ void shape::pivot(optional<tile> history[][gHeight]) {
 		int newOY = tiles[i].ox;
 		int newX = x + newOX;
 		int newY = y + newOY;
-		if (newX < 0 || newX >= gWidth || newY >= gHeight || history[x][y].has_value()) {
+		if (newX < 0 || newX >= gWidth || newY >= gHeight || history[newX][newY].has_value()) {
 			// dont do anything with the new coords
 			return;
 		}
