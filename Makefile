@@ -1,6 +1,6 @@
 
 all:
-	g++ -o main main.cpp -lraylib
+	g++ -o main src/main.cpp src/jeweldrop.cpp -lraylib -Iinclude
 
 run:
 	./main
