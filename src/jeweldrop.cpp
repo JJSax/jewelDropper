@@ -44,7 +44,7 @@ void shape::shift(shiftDir LR, optional<tile> history[][gHeight]) {
 	for (int i = 0; i < tiles.size(); i++) {
 		int tx = x + tiles[i].ox;
 		int ty = y + tiles[i].oy;
-		if (tx == gWidth || tx < 0 || history[tx][ty].has_value())
+		if (tx < 0 || tx == gWidth || (ty > 0 && history[tx][ty].has_value()))
 			x += -LR;
 	}
 }
