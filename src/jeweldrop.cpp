@@ -33,10 +33,10 @@ bool shape::step(optional<tile> history[][gHeight]) {
 		if (ty >= gHeight || (ty >= 0 && history[tx][ty].has_value()))
 		{ // when it settles
 			y--;
-			return true;
+			return false;
 		}
 	}
-	return false;
+	return true;
 }
 
 void shape::shift(shiftDir LR, optional<tile> history[][gHeight]) {
@@ -183,6 +183,7 @@ shape *randomPiece(void) {
 
 game::game() {
 	currentPiece = randomPiece();
+	score = 0;
 }
 
 bool game::isOccupied(int x, int y) {
@@ -190,10 +191,10 @@ bool game::isOccupied(int x, int y) {
 	return history[x][y].has_value();
 }
 
-void game::removeRowIfCompleted(int y) {
+bool game::removeRowIfCompleted(int y) {
 	for (int x = 0; x < gWidth; x++) {
 		if (!isOccupied(x, y)) {
-			return;
+			return false;
 		}
 	}
 	for (int i = y; i > 0; i--) {
@@ -204,10 +205,15 @@ void game::removeRowIfCompleted(int y) {
 	for (int x = 0; x < gWidth; x++) {
 		history[x][0].reset();
 	}
+	return true;
 }
 
+
 bool game::step() {
-	if (!currentPiece->step(history)) return true; // if cannot move down
+	if (currentPiece->step(history)) return true; // if can move down
+	static int scoreMap[5] = {
+		0, 100, 400, 900, 2000
+	};
 
 	// check defeat
 	for (auto& t : currentPiece->tiles) {
@@ -217,7 +223,6 @@ bool game::step() {
 	}
 
 	set<int> rowsAffected;
-
 	for (int i = 0; i < currentPiece->tiles.size(); i++) {
 		// settle pieces into history
 		int tx = currentPiece->x + currentPiece->tiles[i].ox;
@@ -225,10 +230,12 @@ bool game::step() {
 		history[tx][ty] = currentPiece->tiles[i];
 		rowsAffected.insert(ty);
 	}
-
+	int tRows = 0;
 	for (auto row : rowsAffected) {
-		removeRowIfCompleted(row);
+		if (removeRowIfCompleted(row)) tRows++;
 	}
+	score += scoreMap[tRows];
+
 	delete currentPiece;
 	currentPiece = randomPiece();
 	return true;

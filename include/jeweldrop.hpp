@@ -48,10 +48,11 @@ public:
 
 class game {
     std::optional<tile> history[gWidth][gHeight];
-    void removeRowIfCompleted(int y);
+    bool removeRowIfCompleted(int y);
 public:
     game();
     shape *currentPiece;
+    int score;
     bool isOccupied(int x, int y);
     const tile& tileAt(int x, int y);
     bool step(); // also settles pieces and generates a new one when doing so
