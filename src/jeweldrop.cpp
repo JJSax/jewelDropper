@@ -20,7 +20,7 @@ enum ShapeTypes {
 
 shape::shape() {
 	this->x = 4;
-	this->y = 2;
+	this->y = -2;
 	this->settled = false;
 }
 
@@ -30,8 +30,8 @@ bool shape::step(optional<tile> history[][gHeight]) {
 	{
 		int tx = x + tiles[i].ox;
 		int ty = y + tiles[i].oy;
-		if (ty >= gHeight || history[tx][ty].has_value())
-		{
+		if (ty >= gHeight || (ty >= 0 && history[tx][ty].has_value()))
+		{ // when it settles
 			y--;
 			return true;
 		}
@@ -206,8 +206,16 @@ void game::removeRowIfCompleted(int y) {
 	}
 }
 
-void game::step() {
-	if (!currentPiece->step(history)) return; // if cannot move down
+bool game::step() {
+	if (!currentPiece->step(history)) return true; // if cannot move down
+
+	// check defeat
+	for (auto& t : currentPiece->tiles) {
+		if (currentPiece->y + t.oy < 0) {
+			return false;
+		}
+	}
+
 	set<int> rowsAffected;
 
 	for (int i = 0; i < currentPiece->tiles.size(); i++) {
@@ -223,6 +231,7 @@ void game::step() {
 	}
 	delete currentPiece;
 	currentPiece = randomPiece();
+	return true;
 }
 
 void game::shift(shiftDir LR) {

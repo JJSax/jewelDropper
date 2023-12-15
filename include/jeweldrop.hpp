@@ -54,7 +54,7 @@ public:
     shape *currentPiece;
     bool isOccupied(int x, int y);
     const tile& tileAt(int x, int y);
-    void step(); // also settles pieces and generates a new one when doing so
+    bool step(); // also settles pieces and generates a new one when doing so
     void shift(shiftDir LR);
     void pivot();
 };
