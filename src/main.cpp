@@ -62,12 +62,14 @@ int main() {
 		if (failScore) {
 			int sw = GetScreenWidth();
 			int sh = GetScreenHeight();
-			DrawRectangle(0, 0, sw, sh, Fade(RED, 0.2));
-			int tw = MeasureText("DEFEAT", 40);
-			DrawText("DEFEAT", sw/2 - tw/2, sh/2, 40, RED);
+			DrawRectangle(0, 0, sw, sh, ColorBrightness(Fade(RED, 0.2), 0.7));
+			int tw = MeasureText("GAME OVER", 40);
+			DrawText("GAME OVER", sw/2 - tw/2-3, sh/2-3, 40, BLACK);
+			DrawText("GAME OVER", sw/2 - tw/2, sh/2, 40, RED);
 
 			const char *str = TextFormat("Score: %i", g.score);
 			tw = MeasureText(str, 30);
+			DrawText(TextFormat("Score: %i", g.score), sw/2 - tw/2-3, sh/2 + 40-3, 30, BLACK);
 			DrawText(TextFormat("Score: %i", g.score), sw/2 - tw/2, sh/2 + 40, 30, RED);
 		}
 
