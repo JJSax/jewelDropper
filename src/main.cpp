@@ -30,6 +30,7 @@ void update(game& g, bool *failScore) {
 	if (IsKeyDown(KEY_DOWN)) {
 		holdDropTime -= GetFrameTime();
 		if (holdDropTime <= 0) {
+			g.score++;
 			holdDropTime = HOLDDROPTIME;
 			forceDrop = true;
 		}
