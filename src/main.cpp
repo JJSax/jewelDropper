@@ -33,8 +33,6 @@ void update(game& g, bool *failScore) {
 			holdDropTime = HOLDDROPTIME;
 			forceDrop = true;
 		}
-
-
 	}
 
 	dropTime -= GetFrameTime();
@@ -49,8 +47,14 @@ int main() {
 
 	game g;
 	bool failScore = false;
+	float foreheadH = cellSize * 4;
+	Camera2D camera;
+	camera.offset = (Vector2) {0, foreheadH};
+	camera.target = (Vector2) {0, 0};
+	camera.rotation = 0.0f;
+	camera.zoom = 1.0f;
 
-	InitWindow(gWidth * cellSize, gHeight * cellSize, "Jewel Dropper");
+	InitWindow(gWidth * cellSize, gHeight * cellSize + foreheadH, "Jewel Dropper");
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
@@ -61,12 +65,14 @@ int main() {
 
 		// draw
 		BeginDrawing();
+		BeginMode2D(camera);
 		ClearBackground(BLACK);
 		for (int y = 0; y < gHeight; y++) {
 			for (int x = 0; x < gWidth; x++) {
 				DrawRectangleLines(x * cellSize, y * cellSize, cellSize, cellSize, WHITE);
 				if (g.isOccupied(x, y))
 					g.tileAt(x, y).rawDraw(x, y);
+
 			}
 		}
 
@@ -85,7 +91,7 @@ int main() {
 			DrawText(TextFormat("Score: %i", g.score), sw/2 - tw/2-3, sh/2 + 40-3, 30, BLACK);
 			DrawText(TextFormat("Score: %i", g.score), sw/2 - tw/2, sh/2 + 40, 30, RED);
 		}
-
+		EndMode2D();
 		EndDrawing();
 	}
 
