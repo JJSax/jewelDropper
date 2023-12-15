@@ -22,8 +22,10 @@ shape::shape() {
 	this->x = 4;
 	this->y = -2;
 	this->settled = false;
+	this->settledY = -2;
 }
 
+// return true if can step down, false if not.
 bool shape::step(optional<tile> history[][gHeight]) {
 	y++;
 	for (int i = 0; i < tiles.size(); i++)
@@ -37,6 +39,18 @@ bool shape::step(optional<tile> history[][gHeight]) {
 		}
 	}
 	return true;
+}
+
+// #include <iostream>
+void shape::gravity(optional<tile> history[][gHeight]) {
+	// get where it will land if it falls straight down.
+	settledY = -2;
+	int cy = y;
+	while (step(history)) 
+		settledY++;
+	// std::cout << settledY << endl;
+	y = cy;
+	settledY += y + 2; // + 2 to account for starting point
 }
 
 void shape::shift(shiftDir LR, optional<tile> history[][gHeight]) {
@@ -56,7 +70,7 @@ void shape::pivot(optional<tile> history[][gHeight]) {
 		int newOY = tiles[i].ox;
 		int newX = x + newOX;
 		int newY = y + newOY;
-		if (newX < 0 || newX >= gWidth || newY >= gHeight || history[newX][newY].has_value()) {
+		if (newX < 0 || newX >= gWidth || newY >= gHeight || (newY > 0 && history[newX][newY].has_value())) {
 			// dont do anything with the new coords
 			return;
 		}
@@ -171,18 +185,21 @@ static_assert(
 	"Number of create piece functions does not match number of shapes in enum"
 );
 
-shape *randomPiece(void) {
+shape *randomPiece(optional<tile> history[][gHeight]) {
 	static random_device rd;
 	static mt19937 rng(rd());
 	static uniform_int_distribution<int> uni(0, N_SHAPES-1);
 
-	return createFunctions[uni(rng)]();
+	shape *piece = createFunctions[uni(rng)]();
+	piece->gravity(history);
+
+	return piece;
 }
 
 
 
 game::game() {
-	currentPiece = randomPiece();
+	currentPiece = randomPiece(history);
 	score = 0;
 }
 
@@ -217,9 +234,8 @@ bool game::step() {
 
 	// check defeat
 	for (auto& t : currentPiece->tiles) {
-		if (currentPiece->y + t.oy < 0) {
+		if (currentPiece->y + t.oy < 0) 
 			return false;
-		}
 	}
 
 	set<int> rowsAffected;
@@ -237,16 +253,18 @@ bool game::step() {
 	score += scoreMap[tRows];
 
 	delete currentPiece;
-	currentPiece = randomPiece();
+	currentPiece = randomPiece(history);
 	return true;
 }
 
 void game::shift(shiftDir LR) {
-	currentPiece->shift(LR, this->history);
+	currentPiece->shift(LR, history);
+	currentPiece->gravity(history);
 }
 
 void game::pivot() {
-	currentPiece->pivot(this->history);
+	currentPiece->pivot(history);
+	currentPiece->gravity(history);
 }
 
 const tile& game::tileAt(int x, int y) {

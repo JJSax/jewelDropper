@@ -38,11 +38,13 @@ public:
     int x, y;
     bool settled;
     std::vector<tile> tiles;
+    int settledY;
 
     shape();
     bool step(std::optional<tile> history[][gHeight]);
     void shift(shiftDir LR, std::optional<tile> history[][gHeight]);
     void pivot(std::optional<tile> history[][gHeight]);
+    void gravity(std::optional<tile> history[][gHeight]);
     void draw();
 };
 

@@ -73,8 +73,21 @@ int main() {
 				DrawRectangleLines(x * cellSize, y * cellSize, cellSize, cellSize, WHITE);
 				if (g.isOccupied(x, y))
 					g.tileAt(x, y).rawDraw(x, y);
-
 			}
+		}
+		for (auto tile : g.currentPiece->tiles) {
+			int px = g.currentPiece->x + tile.ox;
+			int py = g.currentPiece->settledY + tile.oy;
+			Color c = tile.color;
+			static int bd = 2; // border
+			Rectangle r = {
+				static_cast<float>(px * cellSize + bd), 
+				static_cast<float>(py * cellSize + bd), 
+				static_cast<float>(cellSize - bd*2), 
+				static_cast<float>(cellSize - bd*2)
+			};
+			DrawRectangleLinesEx(r, 2, c);
+			DrawRectangleRec(r, Fade(c, 0.2));
 		}
 
 		g.currentPiece->draw();
