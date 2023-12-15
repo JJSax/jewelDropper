@@ -14,6 +14,9 @@ extern "C" {
 
 const float DROPTIME = 0.75;
 float dropTime = DROPTIME; // time to drop one space
+const float HOLDDROPTIME = 0.1;
+float holdDropTime = HOLDDROPTIME;
+bool forceDrop = false;
 
 using namespace std;
 
@@ -24,10 +27,20 @@ void update(game& g, bool *failScore) {
 		g.shift(RIGHT);
 	if (IsKeyPressed(KEY_UP))
 		g.pivot();
+	if (IsKeyDown(KEY_DOWN)) {
+		holdDropTime -= GetFrameTime();
+		if (holdDropTime <= 0) {
+			holdDropTime = HOLDDROPTIME;
+			forceDrop = true;
+		}
+
+
+	}
 
 	dropTime -= GetFrameTime();
-	if (dropTime <= 0 || IsKeyPressed(KEY_DOWN)) {
+	if (dropTime <= 0 || forceDrop) {
 		dropTime = DROPTIME;
+		forceDrop = false;
 		if (!g.step()) *failScore = true;
 	}
 }
