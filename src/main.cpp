@@ -59,6 +59,11 @@ void update(game& g, bool *failScore) {
 		}
 	}
 
+	if (IsKeyPressed(KEY_SPACE)) {
+		g.currentPiece->y = g.currentPiece->settledY;
+		if (!g.step()) *failScore = true;
+	}
+
 	dropTime -= GetFrameTime();
 	if (dropTime <= 0 || forceDrop) {
 		dropTime = DROPTIME;
