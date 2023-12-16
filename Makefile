@@ -1,9 +1,9 @@
 
 all: src/*.cpp include/*.hpp
-	g++ -o main src/main.cpp src/jeweldrop.cpp -lraylib -Iinclude
+	clang++ -o main src/*.cpp -lraylib -Iinclude -Wno-c99-designator
 
 run:
 	./main
 
 clean:
-	rm main
+	-rm main

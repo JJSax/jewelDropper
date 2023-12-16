@@ -41,14 +41,12 @@ bool shape::step(optional<tile> history[][gHeight]) {
 	return true;
 }
 
-// #include <iostream>
 void shape::gravity(optional<tile> history[][gHeight]) {
 	// get where it will land if it falls straight down.
 	settledY = -2;
 	int cy = y;
-	while (step(history)) 
+	while (step(history))
 		settledY++;
-	// std::cout << settledY << endl;
 	y = cy;
 	settledY += y + 2; // + 2 to account for starting point
 }
@@ -228,13 +226,13 @@ bool game::removeRowIfCompleted(int y) {
 
 bool game::step() {
 	if (currentPiece->step(history)) return true; // if can move down
-	static int scoreMap[5] = {
+	static const int scoreMap[5] = {
 		0, 100, 400, 900, 2000
 	};
 
 	// check defeat
 	for (auto& t : currentPiece->tiles) {
-		if (currentPiece->y + t.oy < 0) 
+		if (currentPiece->y + t.oy < 0)
 			return false;
 	}
 

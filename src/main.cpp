@@ -6,27 +6,49 @@ extern "C" {
 #include <vector>
 #include <iostream>
 #include <string>
+// #include <cstring> // for strdup
 
 #include "jeweldrop.hpp"
 
 /*
+TODO next piece view
+TODO make hold piece
+TODO make hold piece view
+TODO Score view
 */
 
 const float DROPTIME = 0.75;
 float dropTime = DROPTIME; // time to drop one space
-const float HOLDDROPTIME = 0.1;
+const float HOLDDROPTIME = 0.075;
 float holdDropTime = HOLDDROPTIME;
 bool forceDrop = false;
+const float HOLDSHIFTTIME = 0.1;
+float holdShiftTime = HOLDSHIFTTIME;
 
 using namespace std;
 
 void update(game& g, bool *failScore) {
-	if (IsKeyPressed(KEY_LEFT))
+	if (IsKeyPressed(KEY_LEFT)) {
 		g.shift(LEFT);
-	if (IsKeyPressed(KEY_RIGHT))
+		holdShiftTime = HOLDSHIFTTIME * 4;
+	}
+	if (IsKeyPressed(KEY_RIGHT)) {
 		g.shift(RIGHT);
+		holdShiftTime = HOLDSHIFTTIME * 4;
+	}
+	if (bool l = IsKeyDown(KEY_LEFT), r = IsKeyDown(KEY_RIGHT); l || r) {
+		holdShiftTime -= GetFrameTime();
+		if (holdShiftTime <= 0) {
+			holdShiftTime = HOLDSHIFTTIME;
+			if (!(l && r))
+				g.shift(l ? LEFT : RIGHT);
+		}
+	}
 	if (IsKeyPressed(KEY_UP))
 		g.pivot();
+	if (IsKeyPressed(KEY_DOWN))
+		// step?
+		holdDropTime = HOLDDROPTIME * 4;
 	if (IsKeyDown(KEY_DOWN)) {
 		holdDropTime -= GetFrameTime();
 		if (holdDropTime <= 0) {
@@ -44,7 +66,7 @@ void update(game& g, bool *failScore) {
 	}
 }
 
-int main() {
+int main(void) {
 
 	game g;
 	bool failScore = false;
@@ -59,6 +81,8 @@ int main() {
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
+
+
 		// update
 		if (!failScore) {
 			update(g, &failScore);
@@ -81,9 +105,9 @@ int main() {
 			Color c = tile.color;
 			static int bd = 2; // border
 			Rectangle r = {
-				static_cast<float>(px * cellSize + bd), 
-				static_cast<float>(py * cellSize + bd), 
-				static_cast<float>(cellSize - bd*2), 
+				static_cast<float>(px * cellSize + bd),
+				static_cast<float>(py * cellSize + bd),
+				static_cast<float>(cellSize - bd*2),
 				static_cast<float>(cellSize - bd*2)
 			};
 			DrawRectangleLinesEx(r, 2, c);
@@ -96,14 +120,15 @@ int main() {
 			int sw = GetScreenWidth();
 			int sh = GetScreenHeight();
 			DrawRectangle(0, 0, sw, sh, ColorBrightness(Fade(RED, 0.2), 0.7));
-			int tw = MeasureText("GAME OVER", 40);
-			DrawText("GAME OVER", sw/2 - tw/2-3, sh/2-3, 40, BLACK);
-			DrawText("GAME OVER", sw/2 - tw/2, sh/2, 40, RED);
+			const char *s = "GAME OVER";
+			int tw = MeasureText(s, 40);
+			DrawText(s, sw/2 - tw/2-3, sh/2-3, 40, BLACK);
+			DrawText(s, sw/2 - tw/2, sh/2, 40, RED);
 
 			const char *str = TextFormat("Score: %i", g.score);
 			tw = MeasureText(str, 30);
-			DrawText(TextFormat("Score: %i", g.score), sw/2 - tw/2-3, sh/2 + 40-3, 30, BLACK);
-			DrawText(TextFormat("Score: %i", g.score), sw/2 - tw/2, sh/2 + 40, 30, RED);
+			DrawText(str, sw/2 - tw/2-3, sh/2 + 40-3, 30, BLACK);
+			DrawText(str, sw/2 - tw/2, sh/2 + 40, 30, RED);
 		}
 		EndMode2D();
 		EndDrawing();
