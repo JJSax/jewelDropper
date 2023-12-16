@@ -15,15 +15,18 @@ TODO next piece view
 TODO make hold piece
 TODO make hold piece view
 TODO Score view
+TODO add vfx to Slam
 */
 
 const float DROPTIME = 0.75;
 float dropTime = DROPTIME; // time to drop one space
-const float HOLDDROPTIME = 0.075;
+const float HOLDDROPTIME = 0.06;
 float holdDropTime = HOLDDROPTIME;
 bool forceDrop = false;
-const float HOLDSHIFTTIME = 0.1;
+const float HOLDSHIFTTIME = 0.05;
 float holdShiftTime = HOLDSHIFTTIME;
+
+const int sidebarWidth = cellSize * 7;
 
 using namespace std;
 
@@ -47,9 +50,10 @@ void update(game& g, bool *failScore) {
 	}
 	if (IsKeyPressed(KEY_UP))
 		g.pivot();
-	if (IsKeyPressed(KEY_DOWN))
-		// step?
+	if (IsKeyPressed(KEY_DOWN)) {
+		if (!g.step()) *failScore = true;
 		holdDropTime = HOLDDROPTIME * 4;
+	}
 	if (IsKeyDown(KEY_DOWN)) {
 		holdDropTime -= GetFrameTime();
 		if (holdDropTime <= 0) {
