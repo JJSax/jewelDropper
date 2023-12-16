@@ -89,12 +89,10 @@ void drawSidebar(game& g) {
 	BeginMode2D(sideBarTranslation);
 
 	Rectangle buttonQuad = {0, 0, sidebarWidth, cellSize * 4};
-	DrawRectangleRec(buttonQuad, GRAY);
-	DrawRectangleLinesEx(buttonQuad, 3, BLACK);
+	DrawOutlineRectangle(buttonQuad, 3, GRAY, BLACK);
 
 	Rectangle scoreQuad = {0, buttonQuad.height, sidebarWidth, cellSize * 4};
-	DrawRectangleRec(scoreQuad, GRAY);
-	DrawRectangleLinesEx(scoreQuad, 3, BLACK);
+	DrawOutlineRectangle(scoreQuad, 3, GRAY, BLACK);
 	const char *str = TextFormat("%i", g.score);
 	const char *scr = "Score";
 	int tw = MeasureText(scr, 40);
@@ -104,15 +102,13 @@ void drawSidebar(game& g) {
 	ShadowText(str, sidebarWidth/2 - tw/2, foreheadH + 60, 30, BLUE);
 
 	Rectangle holdQuad = {0, scoreQuad.y + scoreQuad.height, sidebarWidth, cellSize * 4};
-	DrawRectangleRec(holdQuad, GRAY);
-	DrawRectangleLinesEx(holdQuad, 3, BLACK);
+	DrawOutlineRectangle(holdQuad, 3, GRAY, BLACK);
 	const char *hold = "HOLD";
 	tw = MeasureText(hold, 30);
 	ShadowText(hold, holdQuad.x + holdQuad.width/2 - tw/2, holdQuad.y + 4, 30, BLUE);
 
 	Rectangle futureQuad = {0, holdQuad.y + scoreQuad.height, sidebarWidth, GetScreenHeight() - holdQuad.y - holdQuad.height};
-	DrawRectangleRec(futureQuad, GRAY);
-	DrawRectangleLinesEx(futureQuad, 3, BLACK);
+	DrawOutlineRectangle(futureQuad, 3, GRAY, BLACK);
 	const char *queue = "Queue";
 	tw = MeasureText(queue, 30);
 	ShadowText(queue, futureQuad.x + futureQuad.width/2 - tw/2, futureQuad.y + 10, 30, BLUE);
