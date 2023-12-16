@@ -36,7 +36,8 @@ void update(game& g, bool *failScore) {
 		g.shift(RIGHT);
 		holdShiftTime = HOLDSHIFTTIME * 4;
 	}
-	if (bool l = IsKeyDown(KEY_LEFT), r = IsKeyDown(KEY_RIGHT); l || r) {
+	bool l = IsKeyDown(KEY_LEFT), r = IsKeyDown(KEY_RIGHT);
+	if (l || r) {
 		holdShiftTime -= GetFrameTime();
 		if (holdShiftTime <= 0) {
 			holdShiftTime = HOLDSHIFTTIME;
