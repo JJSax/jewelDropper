@@ -76,6 +76,53 @@ void update(game& g, bool *failScore) {
 	}
 }
 
+void drawSidebar(game& g) {
+
+	static const int tOff = 3;
+	static const float foreheadH = cellSize * 4;
+	static Camera2D sideBarTranslation = {
+		.offset = (Vector2) {gWidth * cellSize, 0},
+		.target = (Vector2) {0, 0},
+		.rotation = 0.0f,
+		.zoom = 1.0f
+	};
+
+	BeginMode2D(sideBarTranslation);
+
+	Rectangle buttonQuad = {0, 0, sidebarWidth, cellSize * 4};
+	DrawRectangleRec(buttonQuad, GRAY);
+	DrawRectangleLinesEx(buttonQuad, 3, BLACK);
+
+	Rectangle scoreQuad = {0, buttonQuad.height, sidebarWidth, cellSize * 4};
+	DrawRectangleRec(scoreQuad, GRAY);
+	DrawRectangleLinesEx(scoreQuad, 3, BLACK);
+	const char *str = TextFormat("%i", g.score);
+	static const char *scr = "Score";
+	int tw = MeasureText(scr, 40);
+	DrawText(scr, sidebarWidth /2 - tw/2 - tOff, foreheadH + 20 - tOff, 40, BLACK);
+	DrawText(scr, sidebarWidth /2 - tw/2, foreheadH + 20, 40, BLUE);
+	tw = MeasureText(str, 30);
+	DrawText(str, sidebarWidth/2 - tw/2 - tOff, foreheadH + 60 - tOff, 30, BLACK);
+	DrawText(str, sidebarWidth/2 - tw/2, foreheadH + 60, 30, BLUE);
+
+	Rectangle holdQuad = {0, scoreQuad.y + scoreQuad.height, sidebarWidth, cellSize * 4};
+	DrawRectangleRec(holdQuad, GRAY);
+	DrawRectangleLinesEx(holdQuad, 3, BLACK);
+	static const char *hold = "HOLD";
+	tw = MeasureText(hold, 30);
+	DrawText(hold, holdQuad.x + holdQuad.width/2 - tw/2 - tOff, holdQuad.y + 4 - tOff, 30, BLACK);
+	DrawText(hold, holdQuad.x + holdQuad.width/2 - tw/2, holdQuad.y + 4, 30, BLUE);
+
+	Rectangle futureQuad = {0, holdQuad.y + scoreQuad.height, sidebarWidth, GetScreenHeight() - holdQuad.y - holdQuad.height};
+	DrawRectangleRec(futureQuad, GRAY);
+	DrawRectangleLinesEx(futureQuad, 3, BLACK);
+	static const char *queue = "Queue";
+	tw = MeasureText(queue, 30);
+	DrawText(queue, futureQuad.x + futureQuad.width/2 - tw/2, futureQuad.y + 10, 30, BLUE);
+
+	EndMode2D();
+}
+
 int main(void) {
 
 	game g;
@@ -87,7 +134,7 @@ int main(void) {
 	camera.rotation = 0.0f;
 	camera.zoom = 1.0f;
 
-	InitWindow(gWidth * cellSize, gHeight * cellSize + foreheadH, "Jewel Dropper");
+	InitWindow(gWidth * cellSize + sidebarWidth, gHeight * cellSize + foreheadH, "Jewel Dropper");
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
@@ -141,6 +188,7 @@ int main(void) {
 			DrawText(str, sw/2 - tw/2, sh/2 + 40, 30, RED);
 		}
 		EndMode2D();
+		drawSidebar(g);
 		EndDrawing();
 	}
 
