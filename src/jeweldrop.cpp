@@ -252,6 +252,7 @@ bool game::step() {
 
 	delete currentPiece;
 	currentPiece = randomPiece(history);
+	tilesDropped++;
 	return true;
 }
 
@@ -262,6 +263,21 @@ void game::shift(shiftDir LR) {
 
 void game::pivot() {
 	currentPiece->pivot(history);
+	currentPiece->gravity(history);
+}
+
+void game::holdSwap() {
+	if (tilesDropped == tilesDroppedHolding) return; // disallow swapping to buy time
+	tilesDroppedHolding = tilesDropped;
+	isHolding = true;
+	shape *cache = holding;
+	holding = currentPiece;
+	currentPiece = cache;
+	if (!currentPiece)
+		currentPiece = randomPiece(history);
+
+	currentPiece->x = 4;
+	currentPiece->y = -2;
 	currentPiece->gravity(history);
 }
 

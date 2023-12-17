@@ -75,6 +75,10 @@ void update(game& g, bool *failScore) {
 		forceDrop = false;
 		if (!g.step()) *failScore = true;
 	}
+
+	if (IsKeyPressed(KEY_C)) {
+		g.holdSwap();
+	}
 }
 
 void drawSidebar(game& g) {
@@ -106,6 +110,16 @@ void drawSidebar(game& g) {
 	const char *hold = "HOLD";
 	tw = MeasureText(hold, 30);
 	ShadowText(hold, holdQuad.x + holdQuad.width/2 - tw/2, holdQuad.y + 4, 30, BLUE);
+	if (g.isHolding) {
+		for (tile t : g.holding->tiles) {
+			DrawOutlineRectangle(
+				holdQuad.x + holdQuad.width/2 + t.ox * cellSize, 
+				holdQuad.y + 30 + t.oy * cellSize, 
+				cellSize, cellSize, 
+				3, t.color, BLACK
+			);
+		}
+	}
 
 	Rectangle futureQuad = {0, holdQuad.y + scoreQuad.height, sidebarWidth, GetScreenHeight() - holdQuad.y - holdQuad.height};
 	DrawOutlineRectangle(futureQuad, 3, GRAY, BLACK);

@@ -53,11 +53,16 @@ class game {
     bool removeRowIfCompleted(int y);
 public:
     game();
+    bool isHolding = false;
     shape *currentPiece;
+    shape *holding;
     int score;
+    int tilesDropped = 0;
+    int tilesDroppedHolding;
     bool isOccupied(int x, int y);
     const tile& tileAt(int x, int y);
     bool step(); // also settles pieces and generates a new one when doing so
     void shift(shiftDir LR);
     void pivot();
+    void holdSwap();
 };
