@@ -285,7 +285,6 @@ void game::pivot() {
 void game::holdSwap() {
 	if (tilesDropped == tilesDroppedHolding) return; // disallow swapping to buy time
 	tilesDroppedHolding = tilesDropped;
-	isHolding = true;
 	shape *cache = holding;
 	holding = currentPiece[0];
 	currentPiece[0] = cache;

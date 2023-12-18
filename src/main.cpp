@@ -12,10 +12,6 @@ extern "C" {
 #include "mergeify.hpp"
 
 /*
-TODO next piece view
-TODO make hold piece
-TODO make hold piece view
-TODO Score view
 TODO add vfx to Slam
 */
 
@@ -65,6 +61,7 @@ void update(game& g, bool *failScore) {
 	}
 
 	if (IsKeyPressed(KEY_SPACE)) {
+		g.score += (g.currentPiece[0]->settledY - g.currentPiece[0]->y) * 3;
 		g.currentPiece[0]->y = g.currentPiece[0]->settledY;
 		if (!g.step()) *failScore = true;
 	}
@@ -110,7 +107,7 @@ void drawSidebar(game& g) {
 	const char *hold = "HOLD";
 	tw = MeasureText(hold, 30);
 	ShadowText(hold, holdQuad.x + holdQuad.width/2 - tw/2, holdQuad.y + 4, 30, BLUE);
-	if (g.isHolding) {
+	if (g.holding) {
 		for (tile t : g.holding->tiles) {
 			DrawOutlineRectangle(
 				holdQuad.x + holdQuad.width/2 + t.ox * cellSize, 

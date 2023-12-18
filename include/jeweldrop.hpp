@@ -53,7 +53,6 @@ class game {
     bool removeRowIfCompleted(int y);
 public:
     game();
-    bool isHolding = false;
     shape *currentPiece[4];
     shape *holding;
     int score;
