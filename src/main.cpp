@@ -65,7 +65,7 @@ void update(game& g, bool *failScore) {
 	}
 
 	if (IsKeyPressed(KEY_SPACE)) {
-		g.currentPiece->y = g.currentPiece->settledY;
+		g.currentPiece[0]->y = g.currentPiece[0]->settledY;
 		if (!g.step()) *failScore = true;
 	}
 
@@ -127,6 +127,19 @@ void drawSidebar(game& g) {
 	tw = MeasureText(queue, 30);
 	ShadowText(queue, futureQuad.x + futureQuad.width/2 - tw/2, futureQuad.y + 10, 30, BLUE);
 
+	for (int i = 0; i < 3; i++)
+	{
+		for (tile t : g.currentPiece[i + 1]->tiles) {
+			DrawOutlineRectangle(
+				futureQuad.x + futureQuad.width/2 + t.ox * cellSize, 
+				futureQuad.y + 50 + i * (cellSize * 3) + t.oy * cellSize, 
+				cellSize, cellSize, 
+				3, t.color, BLACK
+			);
+		}
+	}
+	
+
 	EndMode2D();
 }
 
@@ -163,9 +176,9 @@ int main(void) {
 					g.tileAt(x, y).rawDraw(x, y);
 			}
 		}
-		for (auto tile : g.currentPiece->tiles) {
-			int px = g.currentPiece->x + tile.ox;
-			int py = g.currentPiece->settledY + tile.oy;
+		for (auto tile : g.currentPiece[0]->tiles) {
+			int px = g.currentPiece[0]->x + tile.ox;
+			int py = g.currentPiece[0]->settledY + tile.oy;
 			Color c = tile.color;
 			static int bd = 2; // border
 			Rectangle r = {
@@ -178,7 +191,7 @@ int main(void) {
 			DrawRectangleRec(r, Fade(c, 0.2));
 		}
 
-		g.currentPiece->draw();
+		g.currentPiece[0]->draw();
 
 		if (failScore) {
 			int sw = GetScreenWidth();

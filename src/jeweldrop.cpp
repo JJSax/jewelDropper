@@ -189,7 +189,7 @@ shape *randomPiece(optional<tile> history[][gHeight]) {
 	static uniform_int_distribution<int> uni(0, N_SHAPES-1);
 
 	shape *piece = createFunctions[uni(rng)]();
-	piece->gravity(history);
+	// piece->gravity(history);
 
 	return piece;
 }
@@ -197,7 +197,18 @@ shape *randomPiece(optional<tile> history[][gHeight]) {
 
 
 game::game() {
-	currentPiece = randomPiece(history);
+	for (int i = 0; i < 4; i++)
+	{
+		currentPiece[i] = randomPiece(history);
+		//! Too tired
+		//! if I forget, my thought is to make this a queue/list of 4
+		//![0] is currentPiece as used before
+		//! think about if history shoudl be passed into randomPiece
+		//!  since it only needs to be used on spawn. could use gravite right?
+	}
+	
+	// currentPiece = randomPiece(history);
+	currentPiece[0]->gravity(history);
 	score = 0;
 }
 
@@ -225,23 +236,23 @@ bool game::removeRowIfCompleted(int y) {
 
 
 bool game::step() {
-	if (currentPiece->step(history)) return true; // if can move down
+	if (currentPiece[0]->step(history)) return true; // if can move down
 	static const int scoreMap[5] = {
 		0, 100, 400, 900, 2000
 	};
 
 	// check defeat
-	for (auto& t : currentPiece->tiles) {
-		if (currentPiece->y + t.oy < 0)
+	for (auto& t : currentPiece[0]->tiles) {
+		if (currentPiece[0]->y + t.oy < 0)
 			return false;
 	}
 
 	set<int> rowsAffected;
-	for (int i = 0; i < currentPiece->tiles.size(); i++) {
+	for (int i = 0; i < currentPiece[0]->tiles.size(); i++) {
 		// settle pieces into history
-		int tx = currentPiece->x + currentPiece->tiles[i].ox;
-		int ty = currentPiece->y + currentPiece->tiles[i].oy;
-		history[tx][ty] = currentPiece->tiles[i];
+		int tx = currentPiece[0]->x + currentPiece[0]->tiles[i].ox;
+		int ty = currentPiece[0]->y + currentPiece[0]->tiles[i].oy;
+		history[tx][ty] = currentPiece[0]->tiles[i];
 		rowsAffected.insert(ty);
 	}
 	int tRows = 0;
@@ -250,20 +261,25 @@ bool game::step() {
 	}
 	score += scoreMap[tRows];
 
-	delete currentPiece;
-	currentPiece = randomPiece(history);
+	delete currentPiece[0];
+	for (int i = 1; i < 4; i++)
+		currentPiece[i-1] = currentPiece[i];
+
+	currentPiece[0]->gravity(history);
+	currentPiece[3] = randomPiece(history);
+
 	tilesDropped++;
 	return true;
 }
 
 void game::shift(shiftDir LR) {
-	currentPiece->shift(LR, history);
-	currentPiece->gravity(history);
+	currentPiece[0]->shift(LR, history);
+	currentPiece[0]->gravity(history);
 }
 
 void game::pivot() {
-	currentPiece->pivot(history);
-	currentPiece->gravity(history);
+	currentPiece[0]->pivot(history);
+	currentPiece[0]->gravity(history);
 }
 
 void game::holdSwap() {
@@ -271,14 +287,14 @@ void game::holdSwap() {
 	tilesDroppedHolding = tilesDropped;
 	isHolding = true;
 	shape *cache = holding;
-	holding = currentPiece;
-	currentPiece = cache;
-	if (!currentPiece)
-		currentPiece = randomPiece(history);
+	holding = currentPiece[0];
+	currentPiece[0] = cache;
+	if (!currentPiece[0])
+		currentPiece[0] = randomPiece(history);
 
-	currentPiece->x = 4;
-	currentPiece->y = -2;
-	currentPiece->gravity(history);
+	currentPiece[0]->x = 4;
+	currentPiece[0]->y = -2;
+	currentPiece[0]->gravity(history);
 }
 
 const tile& game::tileAt(int x, int y) {

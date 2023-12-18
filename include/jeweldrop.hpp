@@ -54,7 +54,7 @@ class game {
 public:
     game();
     bool isHolding = false;
-    shape *currentPiece;
+    shape *currentPiece[4];
     shape *holding;
     int score;
     int tilesDropped = 0;
