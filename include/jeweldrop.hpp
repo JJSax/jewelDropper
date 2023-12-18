@@ -39,6 +39,7 @@ public:
     bool settled;
     std::vector<tile> tiles;
     int settledY;
+    int rotation = 0;
 
     shape();
     bool step(std::optional<tile> history[][gHeight]);

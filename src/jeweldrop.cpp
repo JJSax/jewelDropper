@@ -1,4 +1,5 @@
 #include "jeweldrop.hpp"
+#include "matris.hpp"
 #include <vector>
 #include <optional>
 #include <random>
@@ -85,6 +86,8 @@ void shape::pivot(optional<tile> history[][gHeight]) {
 		tIter++;
 		nIter++;
 	}
+	rotation++;
+	wrapNum(&rotation, 0, 4);
 }
 
 void shape::draw() {
@@ -198,16 +201,7 @@ shape *randomPiece(optional<tile> history[][gHeight]) {
 
 game::game() {
 	for (int i = 0; i < 4; i++)
-	{
 		currentPiece[i] = randomPiece(history);
-		//! Too tired
-		//! if I forget, my thought is to make this a queue/list of 4
-		//![0] is currentPiece as used before
-		//! think about if history shoudl be passed into randomPiece
-		//!  since it only needs to be used on spawn. could use gravite right?
-	}
-	
-	// currentPiece = randomPiece(history);
 	currentPiece[0]->gravity(history);
 	score = 0;
 }
@@ -287,6 +281,11 @@ void game::holdSwap() {
 	tilesDroppedHolding = tilesDropped;
 	shape *cache = holding;
 	holding = currentPiece[0];
+
+	// ensure original rotation - prefers wider than taller
+	holding->y = -3; // prevent collisions with history
+	while (holding->rotation != 0) holding->pivot(history);
+
 	currentPiece[0] = cache;
 	if (!currentPiece[0])
 		currentPiece[0] = randomPiece(history);

@@ -13,6 +13,9 @@ extern "C" {
 
 /*
 TODO add vfx to Slam
+IDEA occasional 'powerup' empty points in history that do things
+	perhaps some can be good or bad, like hitting it forces a slam, but is worth a lot more points
+
 */
 
 const float DROPTIME = 0.75;
@@ -106,7 +109,7 @@ void drawSidebar(game& g) {
 	DrawOutlineRectangle(holdQuad, 3, GRAY, BLACK);
 	const char *hold = "HOLD";
 	tw = MeasureText(hold, 30);
-	ShadowText(hold, holdQuad.x + holdQuad.width/2 - tw/2, holdQuad.y + 4, 30, BLUE);
+	ShadowText(hold, holdQuad.x + holdQuad.width/2 - tw/2, holdQuad.y + 7, 30, BLUE);
 	if (g.holding) {
 		for (tile t : g.holding->tiles) {
 			DrawOutlineRectangle(
@@ -124,9 +127,8 @@ void drawSidebar(game& g) {
 	tw = MeasureText(queue, 30);
 	ShadowText(queue, futureQuad.x + futureQuad.width/2 - tw/2, futureQuad.y + 10, 30, BLUE);
 
-	for (int i = 0; i < 3; i++)
-	{
-		for (tile t : g.currentPiece[i + 1]->tiles) {
+	for (int i = 0; i < 3; i++) { // go through 3 queue places
+		for (tile t : g.currentPiece[i + 1]->tiles) { // tiles
 			DrawOutlineRectangle(
 				futureQuad.x + futureQuad.width/2 + t.ox * cellSize, 
 				futureQuad.y + 50 + i * (cellSize * 3) + t.oy * cellSize, 
