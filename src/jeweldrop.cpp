@@ -54,9 +54,9 @@ void shape::gravity(optional<tile> history[][gHeight]) {
 
 void shape::shift(shiftDir LR, optional<tile> history[][gHeight]) {
 	x += LR;
-	for (int i = 0; i < tiles.size(); i++) {
-		int tx = x + tiles[i].ox;
-		int ty = y + tiles[i].oy;
+	for (tile t : tiles) {
+		int tx = x + t.ox;
+		int ty = y + t.oy;
 		if (tx < 0 || tx == gWidth || (ty > 0 && history[tx][ty].has_value()))
 			x += -LR;
 	}
@@ -103,6 +103,8 @@ public:
 		this->tiles.emplace_back(-1, 0, PURPLE);
 		this->tiles.emplace_back( 1, 0, PURPLE);
 		this->tiles.emplace_back( 0,-1, PURPLE);
+		this->midx = -0.5;
+		this->midy = -0.5;
 	}
 };
 
@@ -113,6 +115,8 @@ public:
 		this->tiles.emplace_back( 1, 0, YELLOW);
 		this->tiles.emplace_back( 0, 1, YELLOW);
 		this->tiles.emplace_back( 1, 1, YELLOW);
+		this->midx = -1;
+		this->midy = -1.5;
 	}
 };
 
@@ -123,6 +127,8 @@ public:
 		this->tiles.emplace_back(-1, 0, SKYBLUE);
 		this->tiles.emplace_back( 1, 0, SKYBLUE);
 		this->tiles.emplace_back( 2, 0, SKYBLUE);
+		this->midx = -1;
+		this->midy = -1;
 	}
 };
 
@@ -133,6 +139,8 @@ public:
 		this->tiles.emplace_back( 1, 0, LIME);
 		this->tiles.emplace_back( 0, 1, LIME);
 		this->tiles.emplace_back(-1, 1, LIME);
+		this->midx = -0.5;
+		this->midy = -1.5;
 	}
 };
 
@@ -143,6 +151,8 @@ public:
 		this->tiles.emplace_back(-1, 0, RED);
 		this->tiles.emplace_back( 0, 1, RED);
 		this->tiles.emplace_back( 1, 1, RED);
+		this->midx = -0.5;
+		this->midy = -1.5;
 	}
 };
 
@@ -153,6 +163,8 @@ public:
 		this->tiles.emplace_back(-1, 0, ORANGE);
 		this->tiles.emplace_back(-2, 0, ORANGE);
 		this->tiles.emplace_back( 0,-1, ORANGE);
+		this->midx = 0.5;
+		this->midy = -0.5;
 	}
 };
 
@@ -163,6 +175,8 @@ public:
 		this->tiles.emplace_back( 0,-1, BLUE);
 		this->tiles.emplace_back( 1, 0, BLUE);
 		this->tiles.emplace_back( 2, 0, BLUE);
+		this->midx = -1.5;
+		this->midy = -0.5;
 	}
 };
 
@@ -283,6 +297,7 @@ void game::holdSwap() {
 	holding = currentPiece[0];
 
 	// ensure original rotation - prefers wider than taller
+	holding->x = 4; // prevent collisions with walls
 	holding->y = -3; // prevent collisions with history
 	while (holding->rotation != 0) holding->pivot(history);
 
