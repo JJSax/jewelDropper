@@ -131,7 +131,7 @@ int main(void) {
 		g.currentPiece[0]->draw();
 
 		if (failScore) {
-			int sw = GetScreenWidth();
+			int sw = GetScreenWidth() - sidebarWidth;
 			int sh = GetScreenHeight();
 			DrawRectangle(0, 0, sw, sh, ColorBrightness(Fade(RED, 0.2), 0.7));
 			const char *s = "GAME OVER";
