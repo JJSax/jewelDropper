@@ -3,25 +3,29 @@
 #include "mergeify.hpp"
 
 const float foreheadH = cellSize * 4;
+const int gap = 5;
+const float roundness = 0.1f;
+
 Camera2D sideBarTranslation = {
 	.offset = (Vector2) {gWidth * cellSize, 0}, 
 	.target = (Vector2) {0, 0},
 	.rotation = 0.0f,
 	.zoom = 1.0f
 };
-Rectangle buttonQuad = {0, 0, sidebarWidth, cellSize * 4};
-Rectangle scoreQuad = {0, buttonQuad.height, sidebarWidth, cellSize * 4};
-Rectangle holdQuad = {0, scoreQuad.y + scoreQuad.height, sidebarWidth, cellSize * 4};
-Rectangle futureQuad = {0, holdQuad.y + scoreQuad.height, sidebarWidth, GetScreenHeight() - holdQuad.y - holdQuad.height};
+Rectangle buttonQuad = 	{gap, gap, sidebarWidth - gap * 2, cellSize * 4 - gap * 2};
+Rectangle scoreQuad = 	{gap, buttonQuad.height + gap, sidebarWidth - gap * 2, cellSize * 4 - gap*2};
+Rectangle holdQuad = 	{gap, scoreQuad.y + scoreQuad.height, sidebarWidth - gap * 2, cellSize * 4 - gap*2};
 
 const int cx = sidebarWidth/2;
 
 void drawGUIPanel() {
-	DrawOutlineRectangle(buttonQuad, 3, GRAY, BLACK);
+	DrawOutlineRectangle(buttonQuad, 3, GRAY, DARKGRAY);
+	// DrawRoundedOuaaatlineRect(buttonQuad, 3, roundness, GRAY, BLACK);
 }
 
 void drawScore(game& g) {
-	DrawOutlineRectangle(scoreQuad, 3, GRAY, BLACK);
+	DrawOutlineRectangle(scoreQuad, 3, GRAY, DARKGRAY);
+	// DrawRoundedOutlineRect(scoreQuad, 3, roundness, GRAY, BLACK);
 	const char *str = TextFormat("%i", g.score);
 	static const char *scr = "Score";
 	int tw = MeasureText(scr, 40);
@@ -31,19 +35,16 @@ void drawScore(game& g) {
 }
 
 void drawHold(game& g) {
-	DrawOutlineRectangle(holdQuad, 3, GRAY, BLACK);
+	DrawOutlineRectangle(holdQuad, 3, GRAY, DARKGRAY);
+	// DrawRoundedOutlineRect(holdQuad, 3, roundness, GRAY, BLACK);
 	static const char *hold = "HOLD";
 	int tw = MeasureText(hold, 30);
 	ShadowText(hold, holdQuad.x + holdQuad.width/2 - tw/2, holdQuad.y + 7, 30, BLUE);
+	int mGap = 10;
+	DrawOutlineRectangle(holdQuad.x + mGap, holdQuad.y + 30, holdQuad.width - mGap*2, holdQuad.height - 20 - mGap, 4, BLACK, DARKGRAY);
 	if (!g.holding) return;
 	int cy = holdQuad.y + holdQuad.height/2 + 30; 
 	for (tile t : g.holding->tiles) {
-		// DrawOutlineRectangle(
-		//     holdQuad.x + holdQuad.width/2 + t.ox * cellSize, 
-		//     holdQuad.y + 30 + t.oy * cellSize, 
-		//     cellSize, cellSize, 
-		//     3, t.color, BLACK
-		// );
 		DrawOutlineRectangle(
 			cx + g.holding->midx * cellSize + t.ox * cellSize,
 			cy + g.holding->midy * cellSize + t.oy * cellSize,
@@ -54,16 +55,26 @@ void drawHold(game& g) {
 }
 
 void drawQueue(game& g) {
-	DrawOutlineRectangle(futureQuad, 3, GRAY, BLACK);
+	static Rectangle futureQuad = {
+		gap, holdQuad.y + scoreQuad.height, 
+		sidebarWidth - gap * 2, GetScreenHeight() - holdQuad.y - holdQuad.height - gap
+	};
+	DrawOutlineRectangle(futureQuad, 3, GRAY, DARKGRAY);
+	// DrawRoundedOutlineRect(futureQuad, 3, roundness, GRAY, BLACK);
 	static const char *queue = "Queue";
 	int tw = MeasureText(queue, 30);
 	ShadowText(queue, futureQuad.x + futureQuad.width/2 - tw/2, futureQuad.y + 10, 30, BLUE);
+	int mGap = 10;
+	DrawOutlineRectangle(futureQuad.x + mGap, futureQuad.y + 35, futureQuad.width - mGap*2, futureQuad.height - 30 - mGap, 4, BLACK, DARKGRAY);
 
 	for (int i = 0; i < 3; i++) { // go through 3 queue places
+		int cy = futureQuad.y + (i + 1) * 80;
+		int ox = g.currentPiece[i + 1]->midx;
+		int oy = g.currentPiece[i + 1]->midy;
 		for (tile t : g.currentPiece[i + 1]->tiles) { // tiles
 			DrawOutlineRectangle(
-				futureQuad.x + futureQuad.width/2 + t.ox * cellSize, 
-				futureQuad.y + 50 + i * (cellSize * 3) + t.oy * cellSize, 
+				cx + ox * cellSize + t.ox * cellSize,
+				cy + oy * cellSize + t.oy * cellSize + 15,
 				cellSize, cellSize, 
 				3, t.color, BLACK
 			);
