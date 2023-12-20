@@ -42,7 +42,7 @@ public:
 
 	shape(float midX, float midY);
 	bool step(std::optional<tile> history[][gHeight]);
-	void shift(shiftDir LR, std::optional<tile> history[][gHeight]);
+	bool shift(shiftDir LR, std::optional<tile> history[][gHeight]);
 	void pivot(std::optional<tile> history[][gHeight]);
 	void gravity(std::optional<tile> history[][gHeight]);
 	void draw();

@@ -52,14 +52,17 @@ void shape::gravity(optional<tile> history[][gHeight]) {
 	settledY += y + 2; // + 2 to account for starting point
 }
 
-void shape::shift(shiftDir LR, optional<tile> history[][gHeight]) {
+bool shape::shift(shiftDir LR, optional<tile> history[][gHeight]) {
 	x += LR;
 	for (tile t : tiles) {
 		int tx = x + t.ox;
 		int ty = y + t.oy;
-		if (tx < 0 || tx == gWidth || (ty > 0 && history[tx][ty].has_value()))
+		if (tx < 0 || tx == gWidth || (ty > 0 && history[tx][ty].has_value())) {
 			x += -LR;
+			return false;
+		}
 	}
+	return true;
 }
 
 void shape::pivot(optional<tile> history[][gHeight]) {
@@ -69,6 +72,15 @@ void shape::pivot(optional<tile> history[][gHeight]) {
 		int newOY = tiles[i].ox;
 		int newX = x + newOX;
 		int newY = y + newOY;
+		if (newX < 0) {
+			if (shift(RIGHT, history)) pivot(history);
+			return;
+		}
+		else if (newX >= gWidth) {
+			if (shift(LEFT, history)) pivot(history);
+			return;
+		}
+
 		if (newX < 0 || newX >= gWidth || newY >= gHeight || (newY > 0 && history[newX][newY].has_value())) {
 			// dont do anything with the new coords
 			return;

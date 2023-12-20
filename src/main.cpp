@@ -57,13 +57,16 @@ void update(game& g) {
 	if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) {
 		dostep(g);
 		holdDropTime = HOLDDROPTIME * 4;
+		dropTime = DROPTIME;
 	}
-	if (IsKeyDown(KEY_DOWN) || IsKeyPressed(KEY_S)) {
+	if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
 		holdDropTime -= GetFrameTime();
 		if (holdDropTime <= 0) {
 			g.score++;
 			holdDropTime = HOLDDROPTIME;
-			forceDrop = true;
+			dropTime = DROPTIME;
+			// forceDrop = true;
+			dostep(g);
 		}
 	}
 
@@ -76,7 +79,7 @@ void update(game& g) {
 	dropTime -= GetFrameTime();
 	if (dropTime <= 0 || forceDrop) {
 		dropTime = DROPTIME;
-		forceDrop = false;
+		// forceDrop = false;
 		dostep(g);
 	}
 
