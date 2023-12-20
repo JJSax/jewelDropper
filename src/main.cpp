@@ -13,7 +13,6 @@
 /*
 TODO add vfx to Slam
 TODO add vfx to row removal
-TODO use a/d + ←/→ for left right
 TODO shift piece when pivoting if possible (when touching edge)
   -- Avoid awkward moments wondering why it's not pivoting
 IDEA occasional 'powerup' empty points in history that do things
@@ -36,15 +35,15 @@ void dostep(game& g) {
 }
 
 void update(game& g) {
-	if (IsKeyPressed(KEY_LEFT)) {
+	if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
 		g.shift(LEFT);
 		holdShiftTime = HOLDSHIFTTIME * 4;
 	}
-	if (IsKeyPressed(KEY_RIGHT)) {
+	if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) {
 		g.shift(RIGHT);
 		holdShiftTime = HOLDSHIFTTIME * 4;
 	}
-	bool l = IsKeyDown(KEY_LEFT), r = IsKeyDown(KEY_RIGHT);
+	bool l = IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A), r = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D);
 	if (l || r) {
 		holdShiftTime -= GetFrameTime();
 		if (holdShiftTime <= 0) {
@@ -53,13 +52,13 @@ void update(game& g) {
 				g.shift(l ? LEFT : RIGHT);
 		}
 	}
-	if (IsKeyPressed(KEY_UP))
+	if (IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))
 		g.pivot();
-	if (IsKeyPressed(KEY_DOWN)) {
+	if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) {
 		dostep(g);
 		holdDropTime = HOLDDROPTIME * 4;
 	}
-	if (IsKeyDown(KEY_DOWN)) {
+	if (IsKeyDown(KEY_DOWN) || IsKeyPressed(KEY_S)) {
 		holdDropTime -= GetFrameTime();
 		if (holdDropTime <= 0) {
 			g.score++;
@@ -137,11 +136,13 @@ int main(void) {
 		BeginDrawing();
 		BeginMode2D(camera);
 		ClearBackground(BLACK);
-		drawTiles(g);
 		if (g.state == PAUSED) {
 			DrawRectangle(0, -foreheadH, gWidth * cellSize, GetScreenHeight(), BLACK);
 			static const int pd = MeasureText("PAUSED", 40);
 			DrawText("PAUSED", gWidth * cellSize/2 - pd/2, GetScreenHeight() / 4, 40, WHITE);
+		}
+		else {
+			drawTiles(g);
 		}
 
 		if (g.state == GAMEOVER) {
