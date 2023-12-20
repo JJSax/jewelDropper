@@ -1,7 +1,4 @@
-
-extern "C" {
 #include <raylib.h>
-}
 
 #include "jeweldrop.hpp"
 

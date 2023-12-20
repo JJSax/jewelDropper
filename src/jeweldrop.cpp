@@ -19,7 +19,7 @@ enum ShapeTypes {
 };
 
 
-shape::shape() {
+shape::shape(float midX, float midY): midx(midX), midy(midY) {
 	this->x = 4;
 	this->y = -2;
 	this->settled = false;
@@ -98,85 +98,71 @@ void shape::draw() {
 
 class tShape : public shape {
 public:
-	tShape() : shape() {
+	tShape() : shape(-0.5, -0.5) {
 		this->tiles.emplace_back( 0, 0, PURPLE);
 		this->tiles.emplace_back(-1, 0, PURPLE);
 		this->tiles.emplace_back( 1, 0, PURPLE);
 		this->tiles.emplace_back( 0,-1, PURPLE);
-		this->midx = -0.5;
-		this->midy = -0.5;
 	}
 };
 
 class oShape : public shape {
 public:
-	oShape() : shape() {
+	oShape() : shape(-1, -1.5) {
 		this->tiles.emplace_back( 0, 0, YELLOW);
 		this->tiles.emplace_back( 1, 0, YELLOW);
 		this->tiles.emplace_back( 0, 1, YELLOW);
 		this->tiles.emplace_back( 1, 1, YELLOW);
-		this->midx = -1;
-		this->midy = -1.5;
 	}
 };
 
 class iShape : public shape {
 public:
-	iShape() : shape() {
+	iShape() : shape(-1, -1) {
 		this->tiles.emplace_back( 0, 0, SKYBLUE);
 		this->tiles.emplace_back(-1, 0, SKYBLUE);
 		this->tiles.emplace_back( 1, 0, SKYBLUE);
 		this->tiles.emplace_back( 2, 0, SKYBLUE);
-		this->midx = -1;
-		this->midy = -1;
 	}
 };
 
 class sShape : public shape {
 public:
-	sShape() : shape() {
+	sShape() : shape(-0.5, -1.5) {
 		this->tiles.emplace_back( 0, 0, LIME);
 		this->tiles.emplace_back( 1, 0, LIME);
 		this->tiles.emplace_back( 0, 1, LIME);
 		this->tiles.emplace_back(-1, 1, LIME);
-		this->midx = -0.5;
-		this->midy = -1.5;
 	}
 };
 
 class zShape : public shape {
 public:
-	zShape() : shape() {
+	zShape() : shape(-0.5, -1.5) {
 		this->tiles.emplace_back( 0, 0, RED);
 		this->tiles.emplace_back(-1, 0, RED);
 		this->tiles.emplace_back( 0, 1, RED);
 		this->tiles.emplace_back( 1, 1, RED);
-		this->midx = -0.5;
-		this->midy = -1.5;
 	}
 };
 
 class lShape : public shape {
 public:
-	lShape() : shape() {
+	lShape() : shape(0.5, -0.5) {
 		this->tiles.emplace_back( 0, 0, ORANGE);
 		this->tiles.emplace_back(-1, 0, ORANGE);
 		this->tiles.emplace_back(-2, 0, ORANGE);
 		this->tiles.emplace_back( 0,-1, ORANGE);
-		this->midx = 0.5;
-		this->midy = -0.5;
 	}
 };
 
 class jShape : public shape {
 public:
-	jShape() : shape() {
+	jShape() : shape(-1.5, -0.5) {
 		this->tiles.emplace_back( 0, 0, BLUE);
 		this->tiles.emplace_back( 0,-1, BLUE);
 		this->tiles.emplace_back( 1, 0, BLUE);
 		this->tiles.emplace_back( 2, 0, BLUE);
-		this->midx = -1.5;
-		this->midy = -0.5;
 	}
 };
 
@@ -202,7 +188,7 @@ static_assert(
 
 shape *randomPiece(optional<tile> history[][gHeight]) {
 	static random_device rd;
-	static mt19937 rng(rd());
+	static mt19937 rng(4); // rd()
 	static uniform_int_distribution<int> uni(0, N_SHAPES-1);
 
 	shape *piece = createFunctions[uni(rng)]();
@@ -218,6 +204,12 @@ game::game() {
 		currentPiece[i] = randomPiece(history);
 	currentPiece[0]->gravity(history);
 	score = 0;
+	holding = nullptr;
+	state = UNPAUSED;
+	score = 0;
+	tilesDropped = 0;
+	tilesDroppedHolding = 0;
+
 }
 
 bool game::isOccupied(int x, int y) {
@@ -313,4 +305,8 @@ void game::holdSwap() {
 const tile& game::tileAt(int x, int y) {
 	// assumes that x, y is within bounds
 	return this->history[x][y].value();
+}
+
+void game::reset() {
+
 }

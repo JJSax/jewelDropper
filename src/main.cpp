@@ -1,6 +1,5 @@
-extern "C" {
+
 #include <raylib.h>
-}
 #include <cstdio>
 #include <optional>
 #include <vector>
@@ -13,9 +12,12 @@ extern "C" {
 
 /*
 TODO add vfx to Slam
+TODO add vfx to row removal
+TODO use a/d + ←/→ for left right
+TODO shift piece when pivoting if possible (when touching edge)
+  -- Avoid awkward moments wondering why it's not pivoting
 IDEA occasional 'powerup' empty points in history that do things
 	perhaps some can be good or bad, like hitting it forces a slam, but is worth a lot more points
-
 */
 
 const float DROPTIME = 0.75;
@@ -26,8 +28,13 @@ bool forceDrop = false;
 const float HOLDSHIFTTIME = 0.05;
 float holdShiftTime = HOLDSHIFTTIME;
 
-
 using namespace std;
+
+void dostep(game& g, bool *failScore) {
+	if (g.step()) return;
+	*failScore = true;
+	g.state = GAMEOVER;
+}
 
 void update(game& g, bool *failScore) {
 	if (IsKeyPressed(KEY_LEFT)) {
@@ -50,7 +57,7 @@ void update(game& g, bool *failScore) {
 	if (IsKeyPressed(KEY_UP))
 		g.pivot();
 	if (IsKeyPressed(KEY_DOWN)) {
-		if (!g.step()) *failScore = true;
+		dostep(g, failScore);
 		holdDropTime = HOLDDROPTIME * 4;
 	}
 	if (IsKeyDown(KEY_DOWN)) {
@@ -65,14 +72,14 @@ void update(game& g, bool *failScore) {
 	if (IsKeyPressed(KEY_SPACE)) {
 		g.score += (g.currentPiece[0]->settledY - g.currentPiece[0]->y) * 3;
 		g.currentPiece[0]->y = g.currentPiece[0]->settledY;
-		if (!g.step()) *failScore = true;
+		dostep(g, failScore);
 	}
 
 	dropTime -= GetFrameTime();
 	if (dropTime <= 0 || forceDrop) {
 		dropTime = DROPTIME;
 		forceDrop = false;
-		if (!g.step()) *failScore = true;
+		dostep(g, failScore);
 	}
 
 	if (IsKeyPressed(KEY_C)) {
@@ -98,7 +105,7 @@ int main(void) {
 
 
 		// update
-		if (!failScore) {
+		if (!failScore && g.state == UNPAUSED) {
 			update(g, &failScore);
 		}
 

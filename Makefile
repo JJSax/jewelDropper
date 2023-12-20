@@ -1,6 +1,6 @@
 
 all: src/*.cpp include/*.hpp
-	clang++ -o main src/*.cpp -lraylib -Iinclude -Wno-c99-designator
+	clang++ -o main src/*.cpp -g -lraylib -Iinclude -Wno-c99-designator
 
 run:
 	./main

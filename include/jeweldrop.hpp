@@ -1,8 +1,6 @@
 #pragma once
 
-extern "C" {
 #include <raylib.h>
-}
 #include <optional>
 #include <vector>
 
@@ -40,9 +38,9 @@ public:
 	std::vector<tile> tiles;
 	int settledY;
 	int rotation = 0;
-	float midx, midy;
+	const float midx, midy;
 
-	shape();
+	shape(float midX, float midY);
 	bool step(std::optional<tile> history[][gHeight]);
 	void shift(shiftDir LR, std::optional<tile> history[][gHeight]);
 	void pivot(std::optional<tile> history[][gHeight]);
@@ -50,13 +48,21 @@ public:
 	void draw();
 };
 
+enum Gamestate {
+	PAUSED,
+	UNPAUSED,
+	GAMEOVER
+};
+
 class game {
 	std::optional<tile> history[gWidth][gHeight];
 	bool removeRowIfCompleted(int y);
+
 public:
 	game();
 	shape *currentPiece[4];
 	shape *holding;
+	Gamestate state = UNPAUSED;
 	int score;
 	int tilesDropped = 0;
 	int tilesDroppedHolding;
@@ -66,4 +72,5 @@ public:
 	void shift(shiftDir LR);
 	void pivot();
 	void holdSwap();
+	void reset();
 };
