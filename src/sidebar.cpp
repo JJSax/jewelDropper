@@ -63,8 +63,10 @@ void drawGUIPanel(game& g) {
 		ShadowText("Replay", x, 18, font, SKYBLUE);
 		if (IsMouseButtonPressed(0)
 		&& GetMouseX() > boardW + x && GetMouseX() < boardW + x + rp
-		&& GetMouseY() > 15 && GetMouseY() < 15 + font)
+		&& GetMouseY() > 15 && GetMouseY() < 15 + font) {
 			g.state = UNPAUSED;
+			g = game();
+		}
 		break;
 	}
 }

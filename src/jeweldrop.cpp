@@ -188,7 +188,7 @@ static_assert(
 
 shape *randomPiece(optional<tile> history[][gHeight]) {
 	static random_device rd;
-	static mt19937 rng(4); // rd()
+	static mt19937 rng(rd());
 	static uniform_int_distribution<int> uni(0, N_SHAPES-1);
 
 	shape *piece = createFunctions[uni(rng)]();
@@ -234,8 +234,8 @@ bool game::removeRowIfCompleted(int y) {
 	return true;
 }
 
-
-bool game::step() {
+// true if game continues, or false if gameover
+bool game::step() { 
 	if (currentPiece[0]->step(history)) return true; // if can move down
 	static const int scoreMap[5] = {
 		0, 100, 400, 900, 2000

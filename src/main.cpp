@@ -30,13 +30,12 @@ float holdShiftTime = HOLDSHIFTTIME;
 
 using namespace std;
 
-void dostep(game& g, bool *failScore) {
+void dostep(game& g) {
 	if (g.step()) return;
-	*failScore = true;
 	g.state = GAMEOVER;
 }
 
-void update(game& g, bool *failScore) {
+void update(game& g) {
 	if (IsKeyPressed(KEY_LEFT)) {
 		g.shift(LEFT);
 		holdShiftTime = HOLDSHIFTTIME * 4;
@@ -57,7 +56,7 @@ void update(game& g, bool *failScore) {
 	if (IsKeyPressed(KEY_UP))
 		g.pivot();
 	if (IsKeyPressed(KEY_DOWN)) {
-		dostep(g, failScore);
+		dostep(g);
 		holdDropTime = HOLDDROPTIME * 4;
 	}
 	if (IsKeyDown(KEY_DOWN)) {
@@ -72,14 +71,14 @@ void update(game& g, bool *failScore) {
 	if (IsKeyPressed(KEY_SPACE)) {
 		g.score += (g.currentPiece[0]->settledY - g.currentPiece[0]->y) * 3;
 		g.currentPiece[0]->y = g.currentPiece[0]->settledY;
-		dostep(g, failScore);
+		dostep(g);
 	}
 
 	dropTime -= GetFrameTime();
 	if (dropTime <= 0 || forceDrop) {
 		dropTime = DROPTIME;
 		forceDrop = false;
-		dostep(g, failScore);
+		dostep(g);
 	}
 
 	if (IsKeyPressed(KEY_C)) {
@@ -87,10 +86,35 @@ void update(game& g, bool *failScore) {
 	}
 }
 
+void drawTiles(game& g) {
+	for (int y = 0; y < gHeight; y++) {
+		for (int x = 0; x < gWidth; x++) {
+			DrawRectangleLines(x * cellSize, y * cellSize, cellSize, cellSize, WHITE);
+			if (g.isOccupied(x, y))
+				g.tileAt(x, y).rawDraw(x, y);
+		}
+	}
+	for (auto tile : g.currentPiece[0]->tiles) {
+		int px = g.currentPiece[0]->x + tile.ox;
+		int py = g.currentPiece[0]->settledY + tile.oy;
+		Color c = tile.color;
+		static int bd = 2; // border
+		Rectangle r = {
+			static_cast<float>(px * cellSize + bd),
+			static_cast<float>(py * cellSize + bd),
+			static_cast<float>(cellSize - bd*2),
+			static_cast<float>(cellSize - bd*2)
+		};
+		DrawRectangleLinesEx(r, 2, c);
+		DrawRectangleRec(r, Fade(c, 0.2));
+	}
+
+	g.currentPiece[0]->draw();
+}
+
 int main(void) {
 
 	game g;
-	bool failScore = false;
 	float foreheadH = cellSize * 4;
 	Camera2D camera;
 	camera.offset = (Vector2) {0, foreheadH};
@@ -105,39 +129,22 @@ int main(void) {
 
 
 		// update
-		if (!failScore && g.state == UNPAUSED) {
-			update(g, &failScore);
+		if (g.state != GAMEOVER && g.state == UNPAUSED) {
+			update(g);
 		}
 
 		// draw
 		BeginDrawing();
 		BeginMode2D(camera);
 		ClearBackground(BLACK);
-		for (int y = 0; y < gHeight; y++) {
-			for (int x = 0; x < gWidth; x++) {
-				DrawRectangleLines(x * cellSize, y * cellSize, cellSize, cellSize, WHITE);
-				if (g.isOccupied(x, y))
-					g.tileAt(x, y).rawDraw(x, y);
-			}
-		}
-		for (auto tile : g.currentPiece[0]->tiles) {
-			int px = g.currentPiece[0]->x + tile.ox;
-			int py = g.currentPiece[0]->settledY + tile.oy;
-			Color c = tile.color;
-			static int bd = 2; // border
-			Rectangle r = {
-				static_cast<float>(px * cellSize + bd),
-				static_cast<float>(py * cellSize + bd),
-				static_cast<float>(cellSize - bd*2),
-				static_cast<float>(cellSize - bd*2)
-			};
-			DrawRectangleLinesEx(r, 2, c);
-			DrawRectangleRec(r, Fade(c, 0.2));
+		drawTiles(g);
+		if (g.state == PAUSED) {
+			DrawRectangle(0, -foreheadH, gWidth * cellSize, GetScreenHeight(), BLACK);
+			static const int pd = MeasureText("PAUSED", 40);
+			DrawText("PAUSED", gWidth * cellSize/2 - pd/2, GetScreenHeight() / 4, 40, WHITE);
 		}
 
-		g.currentPiece[0]->draw();
-
-		if (failScore) {
+		if (g.state == GAMEOVER) {
 			int sw = GetScreenWidth() - sidebarWidth;
 			int sh = GetScreenHeight();
 			DrawRectangle(0, 0, sw, sh, ColorBrightness(Fade(RED, 0.2), 0.7));
