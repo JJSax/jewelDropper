@@ -201,7 +201,6 @@ shape *randomPiece(optional<tile> history[][gHeight]) {
 	static uniform_int_distribution<int> uni(0, N_SHAPES-1);
 
 	shape *piece = createFunctions[uni(rng)]();
-	// piece->gravity(history);
 
 	return piece;
 }
@@ -305,7 +304,7 @@ void game::holdSwap() {
 	holding = currentPiece[0];
 
 	// ensure original rotation - prefers wider than taller
-	holding->x = 4; // prevent collisions with walls
+	holding->x =  4; // prevent collisions with walls
 	holding->y = -3; // prevent collisions with history
 	while (holding->rotation != 0) holding->pivot(history);
 
@@ -325,8 +324,4 @@ const tile& game::tileAt(int x, int y) {
 
 void game::gravity() {
 	currentPiece[0]->gravity(history);
-}
-
-void game::reset() {
-
 }

@@ -77,6 +77,5 @@ public:
 	void shift(shiftDir LR);
 	void pivot();
 	void holdSwap();
-	void reset();
 	void gravity();
 };

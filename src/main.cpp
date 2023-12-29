@@ -5,32 +5,23 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <cmath>
 // #include <cstring> // for strdup
 
 #include "jeweldrop.hpp"
 #include "sidebar.hpp"
+#include "mergeify.hpp"
 
 /*
 TODO add vfx to Slam
-TODO add vfx to row removal
-TODO shift piece when pivoting if possible (when touching edge)
-  -- Avoid awkward moments wondering why it's not pivoting
 IDEA occasional 'powerup' empty points in history that do things
 	perhaps some can be good or bad, like hitting it forces a slam, but is worth a lot more points
 */
 
-const float DROPTIME = 0.75;
-float dropTime = DROPTIME; // time to drop one space
-const float HOLDDROPTIME = 0.06;
-float holdDropTime = HOLDDROPTIME;
-bool forceDrop = false;
-const float HOLDSHIFTTIME = 0.05;
-float holdShiftTime = HOLDSHIFTTIME;
-const float REDUCETIME = 1.0f;
-float reduceTime = REDUCETIME;
-const float BLINKTIME = 4.0f; // will be reduced by dt * 4.  two on/off cycle per second
-float blinkTime = BLINKTIME;
+VariableGroup dropTime = 0.75f; // time to drop one space
+VariableGroup holdDropTime = 0.06f;
+VariableGroup holdShiftTime = 0.05f;
+VariableGroup reduceTime = 1.0f;
+VariableGroup blinkTime = 4.0f; // will be reduced by dt * 4.  two on/off cycle per second
 
 using namespace std;
 
@@ -44,9 +35,9 @@ void update(game& g) {
 		reduceTime -= GetFrameTime();
 		blinkTime -= GetFrameTime() * 4;
 		if (reduceTime > 0) return; // still reducing
-		reduceTime = REDUCETIME;
+		reduceTime.reset();
 		g.reducingRows = false;
-		blinkTime = BLINKTIME;
+		blinkTime.reset();
 		for (int row : g.completedRows) {
 			g.removeRow(row);
 			g.completedRows.erase(row);
@@ -57,17 +48,17 @@ void update(game& g) {
 
 	if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
 		g.shift(LEFT);
-		holdShiftTime = HOLDSHIFTTIME * 4;
+		holdShiftTime.multReset(4);
 	}
 	if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) {
 		g.shift(RIGHT);
-		holdShiftTime = HOLDSHIFTTIME * 4;
+		holdShiftTime.multReset(4);
 	}
 	bool l = IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A), r = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D);
 	if (l || r) {
 		holdShiftTime -= GetFrameTime();
 		if (holdShiftTime <= 0) {
-			holdShiftTime = HOLDSHIFTTIME;
+			holdShiftTime.reset();
 			if (!(l && r))
 				g.shift(l ? LEFT : RIGHT);
 		}
@@ -75,17 +66,16 @@ void update(game& g) {
 	if (IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))
 		g.pivot();
 	if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) {
-		holdDropTime = HOLDDROPTIME * 4;
-		dropTime = DROPTIME;
+		holdDropTime.multReset(4);
+		dropTime.reset();
 		dostep(g);
 	}
 	if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
 		holdDropTime -= GetFrameTime();
 		if (holdDropTime <= 0) {
 			g.score++;
-			holdDropTime = HOLDDROPTIME;
-			dropTime = DROPTIME;
-			// forceDrop = true;
+			holdDropTime.reset();
+			dropTime.reset();
 			dostep(g);
 		}
 	}
@@ -97,9 +87,8 @@ void update(game& g) {
 	}
 
 	dropTime -= GetFrameTime();
-	if (dropTime <= 0 || forceDrop) {
-		dropTime = DROPTIME;
-		// forceDrop = false;
+	if (dropTime <= 0) {
+		dropTime.reset();
 		dostep(g);
 	}
 
