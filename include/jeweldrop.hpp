@@ -68,7 +68,8 @@ public:
 	int tilesDropped = 0;
 	int tilesDroppedHolding;
 	bool reducingRows;
-	int completedRows[4] = {-1}; // The rows that are in queue to be removed
+	// int completedRows[4] = {-1}; // The rows that are in queue to be removed
+	std::set<int> completedRows;
 	bool isOccupied(int x, int y);
 	const tile& tileAt(int x, int y);
 	bool removeRow(int y);
@@ -77,4 +78,5 @@ public:
 	void pivot();
 	void holdSwap();
 	void reset();
+	void gravity();
 };

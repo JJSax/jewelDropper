@@ -270,11 +270,10 @@ bool game::step() {
 	int tRows = 0;
 	for (auto row : rowsAffected) {
 		if (rowCompleted(row)) {
-			completedRows[tRows] = row;
+			completedRows.insert(row);
 			tRows++;
 			reducingRows = true;
 		}
-		// if (removeRow(row)) tRows++;
 	}
 	score += scoreMap[tRows];
 
@@ -322,6 +321,10 @@ void game::holdSwap() {
 const tile& game::tileAt(int x, int y) {
 	// assumes that x, y is within bounds
 	return this->history[x][y].value();
+}
+
+void game::gravity() {
+	currentPiece[0]->gravity(history);
 }
 
 void game::reset() {

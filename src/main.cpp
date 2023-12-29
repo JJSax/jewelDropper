@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <cmath>
 // #include <cstring> // for strdup
 
 #include "jeweldrop.hpp"
@@ -46,11 +47,11 @@ void update(game& g) {
 		reduceTime = REDUCETIME;
 		g.reducingRows = false;
 		blinkTime = BLINKTIME;
-		for (int i = 0; i < 4; i++) {
-			if (g.completedRows[i] == -1) break;
-			g.removeRow(g.completedRows[i]);
-			g.completedRows[i] = -1;
+		for (int row : g.completedRows) {
+			g.removeRow(row);
+			g.completedRows.erase(row);
 		}
+		g.gravity();
 		return;
 	}; 
 
@@ -107,11 +108,13 @@ void update(game& g) {
 	}
 }
 
+
 void drawTiles(game& g) {
 	for (int y = 0; y < gHeight; y++) {
 		for (int x = 0; x < gWidth; x++) {
 			DrawRectangleLines(x * cellSize, y * cellSize, cellSize, cellSize, WHITE);
-			if (g.isOccupied(x, y))
+			bool isCompleted = g.completedRows.count(y) == 1;
+			if (g.isOccupied(x, y) && (!isCompleted || isCompleted && (int)blinkTime % 2 == 0))
 				g.tileAt(x, y).rawDraw(x, y);
 		}
 	}
