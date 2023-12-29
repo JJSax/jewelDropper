@@ -1,9 +1,6 @@
 #include "jeweldrop.hpp"
 #include "matris.hpp"
-#include <vector>
-#include <optional>
 #include <random>
-#include <set>
 
 using namespace std;
 
@@ -81,7 +78,7 @@ void shape::pivot(optional<tile> history[][gHeight]) {
 			return;
 		}
 
-		if (newX < 0 || newX >= gWidth || newY >= gHeight || (newY > 0 && history[newX][newY].has_value())) {
+		if (newY >= gHeight || (newY > 0 && history[newX][newY].has_value())) {
 			// dont do anything with the new coords
 			return;
 		}
@@ -221,6 +218,7 @@ game::game() {
 	score = 0;
 	tilesDropped = 0;
 	tilesDroppedHolding = 0;
+	reducingRows = false;
 
 }
 
@@ -229,12 +227,14 @@ bool game::isOccupied(int x, int y) {
 	return history[x][y].has_value();
 }
 
-bool game::removeRowIfCompleted(int y) {
+bool game::rowCompleted(int y) {
 	for (int x = 0; x < gWidth; x++) {
-		if (!isOccupied(x, y)) {
+		if (!isOccupied(x, y))
 			return false;
-		}
 	}
+	return true;
+}
+bool game::removeRow(int y) {
 	for (int i = y; i > 0; i--) {
 		for (int x = 0; x < gWidth; x++) {
 			history[x][i] = history[x][i-1];
@@ -269,12 +269,17 @@ bool game::step() {
 	}
 	int tRows = 0;
 	for (auto row : rowsAffected) {
-		if (removeRowIfCompleted(row)) tRows++;
+		if (rowCompleted(row)) {
+			completedRows[tRows] = row;
+			tRows++;
+			reducingRows = true;
+		}
+		// if (removeRow(row)) tRows++;
 	}
 	score += scoreMap[tRows];
 
 	delete currentPiece[0];
-	for (int i = 1; i < 4; i++)
+	for (int i = 1; i < 4; i++) // push shapes up in the queue
 		currentPiece[i-1] = currentPiece[i];
 
 	currentPiece[0]->gravity(history);

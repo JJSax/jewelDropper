@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include <optional>
 #include <vector>
+#include <set>
 
 constexpr int gWidth = 10;
 constexpr int gHeight = 18;
@@ -56,7 +57,7 @@ enum Gamestate {
 
 class game {
 	std::optional<tile> history[gWidth][gHeight];
-	bool removeRowIfCompleted(int y);
+	bool rowCompleted(int y);
 
 public:
 	game();
@@ -66,9 +67,12 @@ public:
 	int score;
 	int tilesDropped = 0;
 	int tilesDroppedHolding;
+	bool reducingRows;
+	int completedRows[4] = {-1}; // The rows that are in queue to be removed
 	bool isOccupied(int x, int y);
 	const tile& tileAt(int x, int y);
-	bool step(); // also settles pieces and generates a new one when doing so
+	bool removeRow(int y);
+	bool step(); // Also settles pieces and generates a new one when doing so
 	void shift(shiftDir LR);
 	void pivot();
 	void holdSwap();

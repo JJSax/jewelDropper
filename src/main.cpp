@@ -26,6 +26,10 @@ float holdDropTime = HOLDDROPTIME;
 bool forceDrop = false;
 const float HOLDSHIFTTIME = 0.05;
 float holdShiftTime = HOLDSHIFTTIME;
+const float REDUCETIME = 1.0f;
+float reduceTime = REDUCETIME;
+const float BLINKTIME = 4.0f; // will be reduced by dt * 4.  two on/off cycle per second
+float blinkTime = BLINKTIME;
 
 using namespace std;
 
@@ -35,6 +39,21 @@ void dostep(game& g) {
 }
 
 void update(game& g) {
+	if (g.reducingRows) { // if row animation is playing
+		reduceTime -= GetFrameTime();
+		blinkTime -= GetFrameTime() * 4;
+		if (reduceTime > 0) return; // still reducing
+		reduceTime = REDUCETIME;
+		g.reducingRows = false;
+		blinkTime = BLINKTIME;
+		for (int i = 0; i < 4; i++) {
+			if (g.completedRows[i] == -1) break;
+			g.removeRow(g.completedRows[i]);
+			g.completedRows[i] = -1;
+		}
+		return;
+	}; 
+
 	if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
 		g.shift(LEFT);
 		holdShiftTime = HOLDSHIFTTIME * 4;
@@ -55,9 +74,9 @@ void update(game& g) {
 	if (IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))
 		g.pivot();
 	if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) {
-		dostep(g);
 		holdDropTime = HOLDDROPTIME * 4;
 		dropTime = DROPTIME;
+		dostep(g);
 	}
 	if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
 		holdDropTime -= GetFrameTime();
