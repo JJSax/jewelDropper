@@ -217,7 +217,6 @@ game::game() {
 	score = 0;
 	tilesDropped = 0;
 	tilesDroppedHolding = 0;
-	reducingRows = false;
 
 }
 
@@ -271,7 +270,7 @@ bool game::step() {
 		if (rowCompleted(row)) {
 			completedRows.insert(row);
 			tRows++;
-			reducingRows = true;
+			state = REDUCINGROWS;
 		}
 	}
 	score += scoreMap[tRows];

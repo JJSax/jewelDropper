@@ -5,7 +5,6 @@
 #include <vector>
 #include <iostream>
 #include <string>
-// #include <cstring> // for strdup
 
 #include "jeweldrop.hpp"
 #include "sidebar.hpp"
@@ -31,12 +30,12 @@ void dostep(game& g) {
 }
 
 void update(game& g) {
-	if (g.reducingRows) { // if row animation is playing
+	if (g.state == REDUCINGROWS) { // if row animation is playing
 		reduceTime -= GetFrameTime();
 		blinkTime -= GetFrameTime() * 4;
 		if (reduceTime > 0) return; // still reducing
 		reduceTime.reset();
-		g.reducingRows = false;
+		g.state = UNPAUSED;
 		blinkTime.reset();
 		for (int row : g.completedRows) {
 			g.removeRow(row);
@@ -142,7 +141,7 @@ int main(void) {
 
 
 		// update
-		if (g.state != GAMEOVER && g.state == UNPAUSED) {
+		if (g.state != GAMEOVER && (g.state == UNPAUSED || g.state == REDUCINGROWS)) {
 			update(g);
 		}
 

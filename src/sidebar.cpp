@@ -58,7 +58,7 @@ void drawGUIPanel(game& g) {
 		&& GetMouseY() > 15 && GetMouseY() < 15 + font)
 			g.state = PAUSED;
 		break;
-	default: // GAMEOVER
+	case GAMEOVER:
 		x = buttonQuad.x + buttonQuad.width/2 - rp/2;
 		ShadowText("Replay", x, 18, font, SKYBLUE);
 		if (IsMouseButtonPressed(0)
@@ -67,6 +67,8 @@ void drawGUIPanel(game& g) {
 			g.state = UNPAUSED;
 			g = game();
 		}
+		break;
+	default: // currently blank button when clearing row
 		break;
 	}
 }
