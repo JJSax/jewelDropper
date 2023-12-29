@@ -43,7 +43,7 @@ void update(game& g) {
 		}
 		g.gravity();
 		return;
-	}; 
+	};
 
 	if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
 		g.shift(LEFT);

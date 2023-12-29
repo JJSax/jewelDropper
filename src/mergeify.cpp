@@ -2,16 +2,12 @@
 
 #include "mergeify.hpp"
 
-Color defaultShadow = BLACK;
 int tOff = 3;
 
-void ShadowText(const char *text, int posX, int posY, int fontSize, Color forground, Color shadow) {
+void ShadowText(const char *text, int posX, int posY, int fontSize, Color foreground, Color shadow) {
 	// const char *txt = text;
 	DrawText(text, posX - tOff, posY - tOff, fontSize, shadow);
-	DrawText(text, posX, posY, fontSize, forground);
-}
-void ShadowText(const char *text, int posX, int posY, int fontSize, Color forground) {
-	ShadowText(text, posX, posY, fontSize, forground, defaultShadow);
+	DrawText(text, posX, posY, fontSize, foreground);
 }
 
 void DrawOutlineRectangle(Rectangle rect, int thickness, Color color, Color outline) {
@@ -29,14 +25,14 @@ void DrawOutlineRectangle(int posX, int posY, int width, int height, int thickne
 }
 
 void DrawRoundedOutlineRect(
-	Rectangle rect, float thickness, float roundness, 
+	Rectangle rect, float thickness, float roundness,
 	Color color, Color outline
 ) {
 	DrawRectangleRounded(rect, roundness, 0, color);
 	DrawRectangleRoundedLines(rect, roundness, 0, thickness, color);
 }
 void DrawRoundedOutlineRect(
-	int posX, int posY, int width, int height, 
+	int posX, int posY, int width, int height,
 	float thickness, float roundness, Color color, Color outline
 ) {
 	Rectangle rect = {
