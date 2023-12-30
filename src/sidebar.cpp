@@ -19,16 +19,26 @@ Rectangle scoreQuad = 	{gap, buttonQuad.height + gap, sidebarWidth - gap * 2, ce
 Rectangle holdQuad = 	{gap, scoreQuad.y + scoreQuad.height, sidebarWidth - gap * 2, cellSize * 4 - gap*2};
 
 const int cx = sidebarWidth/2;
+Gamestate previousState = UNPAUSED;
+
+
+bool testButton(game& g, Gamestate previous, int measure, int x) {
+	static int boardW = cellSize * gWidth;
+	static int font = 40;
+	return (IsMouseButtonPressed(0)
+	&& GetMouseX() > boardW + x && GetMouseX() < boardW + x + measure
+	&& GetMouseY() > 15 && GetMouseY() < 15 + font);
+}
 
 void drawGUIPanel(game& g) {
 	DrawOutlineRectangle(buttonQuad, 3, GRAY, DARKGRAY);
 	// DrawRoundedOuaaatlineRect(buttonQuad, 3, roundness, GRAY, BLACK);
-	static int boardW = cellSize * gWidth;
 	static int font = 40;
-	int up = MeasureText("Unpause", font);
-	int ps = MeasureText(  "Pause", font);
-	int rp = MeasureText( "Replay", font);
+	static int up = MeasureText("Unpause", font);
+	static int ps = MeasureText(  "Pause", font);
+	static int rp = MeasureText( "Replay", font);
 	int x;
+	const char* txt = "";
 
 	Rectangle button = {
 		buttonQuad.x + buttonQuad.width/2 - up/2 - 5,
@@ -37,40 +47,46 @@ void drawGUIPanel(game& g) {
 		font + 10.0f
 	};
 
-	// Color hoverCol = GetMouseX() > boardW + x && GetMouseX() < boardW + x + ps
-	// 	&& GetMouseY() > 15 && GetMouseY() < 15 + font ? DARKSLATEGRAY : SLATEGRAY;
 	DrawOutlineRectangle(button, 4, SLATEGRAY, DARKGRAY);
-
 	switch (g.state) {
-	case PAUSED:
-		x = buttonQuad.x + buttonQuad.width/2 - up/2;
-		ShadowText("Unpause", x, 18, font, SKYBLUE);
-		if (IsMouseButtonPressed(0)
-		&& GetMouseX() > boardW + x && GetMouseX() < boardW + x + up
-		&& GetMouseY() > 15 && GetMouseY() < 15 + font)
-			g.state = UNPAUSED;
-		break;
-	case UNPAUSED:
-		x = buttonQuad.x + buttonQuad.width/2 - ps/2;
-		ShadowText("Pause", x, 18, font, SKYBLUE);
-		if (IsMouseButtonPressed(0)
-		&& GetMouseX() > boardW + x && GetMouseX() < boardW + x + ps
-		&& GetMouseY() > 15 && GetMouseY() < 15 + font)
-			g.state = PAUSED;
-		break;
-	case GAMEOVER:
-		x = buttonQuad.x + buttonQuad.width/2 - rp/2;
-		ShadowText("Replay", x, 18, font, SKYBLUE);
-		if (IsMouseButtonPressed(0)
-		&& GetMouseX() > boardW + x && GetMouseX() < boardW + x + rp
-		&& GetMouseY() > 15 && GetMouseY() < 15 + font) {
-			g.state = UNPAUSED;
-			g = game();
-		}
-		break;
-	default: // currently blank button when clearing row
-		break;
+		case PAUSED:
+			x = buttonQuad.x + buttonQuad.width/2 - up/2;
+			if (testButton(g, previousState, up, x)) {
+				g.state = previousState;
+				previousState = PAUSED;
+			}
+			txt = "Unpause";
+			break;
+		case UNPAUSED:
+			x = buttonQuad.x + buttonQuad.width/2 - ps/2;
+			if (testButton(g, previousState, ps, x)) {
+				previousState = g.state;
+				g.state = PAUSED;
+			}
+			txt = "Pause";
+			break;
+		case REDUCINGROWS:
+			x = buttonQuad.x + buttonQuad.width/2 - ps/2;
+			if (testButton(g, previousState, ps, x)) {
+				previousState = g.state;
+				g.state = PAUSED;
+			}
+			txt = "Pause";
+			break;
+		case GAMEOVER:
+			x = buttonQuad.x + buttonQuad.width/2 - rp/2;
+			if (testButton(g, previousState, rp, x)) {
+				g.state = UNPAUSED;
+				previousState = UNPAUSED;
+				g = game();
+			}
+			txt = "Replay";
+			break;
+		default: // currently blank button when clearing row
+			break;
 	}
+		
+	ShadowText(txt, x, 18, font, SKYBLUE);
 }
 
 void drawScore(game& g) {
