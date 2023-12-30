@@ -243,6 +243,15 @@ bool game::removeRow(int y) {
 	}
 	return true;
 }
+void game::removeCompleted() {
+	// use when wanting to reduce all complete rows
+	state = UNPAUSED;
+	for (int row : completedRows) {
+		removeRow(row);
+		completedRows.erase(row);
+	}
+	gravity();
+}
 
 // true if game continues, or false if gameover
 bool game::step() { 

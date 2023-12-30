@@ -35,13 +35,8 @@ void update(game& g) {
 		blinkTime -= GetFrameTime() * 4;
 		if (reduceTime > 0) return; // still reducing
 		reduceTime.reset();
-		g.state = UNPAUSED;
 		blinkTime.reset();
-		for (int row : g.completedRows) {
-			g.removeRow(row);
-			g.completedRows.erase(row);
-		}
-		g.gravity();
+		g.removeCompleted();
 		return;
 	};
 
@@ -127,7 +122,7 @@ void drawTiles(game& g) {
 int main(void) {
 
 	game g;
-	float foreheadH = cellSize * 4;
+	static float foreheadH = cellSize * 4;
 	Camera2D camera;
 	camera.offset = (Vector2) {0, foreheadH};
 	camera.target = (Vector2) {0, 0};
@@ -138,7 +133,6 @@ int main(void) {
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
-
 
 		// update
 		if (g.state != GAMEOVER && (g.state == UNPAUSED || g.state == REDUCINGROWS)) {

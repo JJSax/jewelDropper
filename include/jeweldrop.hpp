@@ -59,6 +59,7 @@ enum Gamestate {
 class game {
 	std::optional<tile> history[gWidth][gHeight];
 	bool rowCompleted(int y);
+	bool removeRow(int y);
 
 public:
 	game();
@@ -71,10 +72,10 @@ public:
 	std::set<int> completedRows;
 	bool isOccupied(int x, int y);
 	const tile& tileAt(int x, int y);
-	bool removeRow(int y);
 	bool step(); // Also settles pieces and generates a new one when doing so
 	void shift(shiftDir LR);
 	void pivot();
 	void holdSwap();
 	void gravity();
+	void removeCompleted();
 };

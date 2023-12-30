@@ -32,7 +32,6 @@ bool testButton(game& g, Gamestate previous, int measure, int x) {
 
 void drawGUIPanel(game& g) {
 	DrawOutlineRectangle(buttonQuad, 3, GRAY, DARKGRAY);
-	// DrawRoundedOuaaatlineRect(buttonQuad, 3, roundness, GRAY, BLACK);
 	static int font = 40;
 	static int up = MeasureText("Unpause", font);
 	static int ps = MeasureText(  "Pause", font);
