@@ -15,7 +15,6 @@ enum ShapeTypes {
 	N_SHAPES
 };
 
-#include <iostream>
 Texture2D jewel;
 Music music;
 void loadJD() { 
