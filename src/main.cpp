@@ -131,6 +131,7 @@ int main(void) {
 
 	InitWindow(gWidth * cellSize + sidebarWidth, gHeight * cellSize + foreheadH, "Jewel Dropper");
 
+	InitAudioDevice();
 	loadJD();
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
@@ -138,6 +139,7 @@ int main(void) {
 		// update
 		if (g.state != GAMEOVER && (g.state == UNPAUSED || g.state == REDUCINGROWS)) {
 			update(g);
+			updateJD();
 		}
 
 		// draw

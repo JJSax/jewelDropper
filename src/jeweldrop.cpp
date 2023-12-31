@@ -15,9 +15,23 @@ enum ShapeTypes {
 	N_SHAPES
 };
 
+#include <iostream>
 Texture2D jewel;
-void loadJD() { jewel = LoadTexture("assets/jewel.png"); }
-void unloadJD() { UnloadTexture(jewel); }
+Music music;
+void loadJD() { 
+	cout << "here" << endl;
+	jewel = LoadTexture("assets/jewel.png"); 
+	music = LoadMusicStream("assets/Twister_Tetris.mp3");
+	PlayMusicStream(music);
+	SetMusicVolume(music, 0.5);
+}
+void unloadJD() { 
+	UnloadTexture(jewel); 
+	UnloadMusicStream(music);
+}
+void updateJD() {
+	UpdateMusicStream(music);
+}
 
 Shape::Shape(float midX, float midY): midx(midX), midy(midY) {
 	this->x = 4;

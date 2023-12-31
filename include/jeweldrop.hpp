@@ -17,6 +17,7 @@ enum shiftDir {
 extern Texture2D jewel;
 void loadJD();
 void unloadJD();
+void updateJD();
 
 class Tile {
 public:
@@ -27,12 +28,12 @@ public:
 	Tile(int x, int y, Color col) : ox(x), oy(y), color(col) {}
 
 	void rawDraw(int x, int y) const {
-		float dx = x * cellSize;
-		float dy = y * cellSize;
-		float scale = static_cast<float>(cellSize) / jewel.height;
+		float dx = x * cellSize + 2;
+		float dy = y * cellSize + 2;
+		float scale = static_cast<float>(cellSize - 4) / jewel.height;
 		Vector2 pos { dx, dy };
-		DrawRectangle(pos.x + 2, pos.y + 2, cellSize - 4, cellSize - 4, color);
-		DrawRectangleLines(pos.x + 2, pos.y + 2, cellSize - 4, cellSize - 4, BLACK);
+		DrawRectangle(pos.x, pos.y, cellSize - 4, cellSize - 4, color);
+		DrawRectangleLines(pos.x, pos.y, cellSize - 4, cellSize - 4, BLACK);
 		DrawTextureEx(jewel, pos, 0, scale, GRAY);
 	}
 };
