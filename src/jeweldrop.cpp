@@ -15,6 +15,9 @@ enum ShapeTypes {
 	N_SHAPES
 };
 
+Texture2D jewel;
+void loadJD() { jewel = LoadTexture("assets/jewel.png"); }
+void unloadJD() { UnloadTexture(jewel); }
 
 Shape::Shape(float midX, float midY): midx(midX), midy(midY) {
 	this->x = 4;
@@ -254,7 +257,7 @@ void Game::removeCompleted() {
 }
 
 // true if game continues, or false if gameover
-bool Game::step() { 
+bool Game::step() {
 	if (currentPiece[0]->step(history)) return true; // if can move down
 	static const int scoreMap[5] = {
 		0, 100, 400, 900, 2000

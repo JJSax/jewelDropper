@@ -14,6 +14,10 @@ enum shiftDir {
 	RIGHT = 1
 };
 
+extern Texture2D jewel;
+void loadJD();
+void unloadJD();
+
 class Tile {
 public:
 	int ox; // offset from host shape x
@@ -23,10 +27,16 @@ public:
 	Tile(int x, int y, Color col) : ox(x), oy(y), color(col) {}
 
 	void rawDraw(int x, int y) const {
-		DrawRectangle(x * cellSize + 2, y * cellSize + 2, cellSize - 4, cellSize - 4, color);
-		DrawRectangleLines(x * cellSize + 2, y * cellSize + 2, cellSize - 4, cellSize - 4, BLACK);
+		float dx = x * cellSize;
+		float dy = y * cellSize;
+		float scale = static_cast<float>(cellSize) / jewel.height;
+		Vector2 pos { dx, dy };
+		DrawRectangle(pos.x + 2, pos.y + 2, cellSize - 4, cellSize - 4, color);
+		DrawRectangleLines(pos.x + 2, pos.y + 2, cellSize - 4, cellSize - 4, BLACK);
+		DrawTextureEx(jewel, pos, 0, scale, GRAY);
 	}
 };
+
 class Shape {
 public:
 	int x, y;

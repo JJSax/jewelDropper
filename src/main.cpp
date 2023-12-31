@@ -131,6 +131,7 @@ int main(void) {
 
 	InitWindow(gWidth * cellSize + sidebarWidth, gHeight * cellSize + foreheadH, "Jewel Dropper");
 
+	loadJD();
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
 
@@ -170,6 +171,8 @@ int main(void) {
 		drawSidebar(g);
 		EndDrawing();
 	}
+
+	unloadJD();
 
 	CloseWindow();
 	return 0;
