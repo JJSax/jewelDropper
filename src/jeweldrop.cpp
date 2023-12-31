@@ -19,7 +19,6 @@ enum ShapeTypes {
 Texture2D jewel;
 Music music;
 void loadJD() { 
-	cout << "here" << endl;
 	jewel = LoadTexture("assets/jewel.png"); 
 	music = LoadMusicStream("assets/Twister_Tetris.mp3");
 	PlayMusicStream(music);
