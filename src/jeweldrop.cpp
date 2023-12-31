@@ -16,7 +16,7 @@ enum ShapeTypes {
 };
 
 
-shape::shape(float midX, float midY): midx(midX), midy(midY) {
+Shape::Shape(float midX, float midY): midx(midX), midy(midY) {
 	this->x = 4;
 	this->y = -2;
 	this->settled = false;
@@ -24,7 +24,7 @@ shape::shape(float midX, float midY): midx(midX), midy(midY) {
 }
 
 // return true if can step down, false if not.
-bool shape::step(optional<tile> history[][gHeight]) {
+bool Shape::step(optional<Tile> history[][gHeight]) {
 	y++;
 	for (int i = 0; i < tiles.size(); i++)
 	{
@@ -39,7 +39,7 @@ bool shape::step(optional<tile> history[][gHeight]) {
 	return true;
 }
 
-void shape::gravity(optional<tile> history[][gHeight]) {
+void Shape::gravity(optional<Tile> history[][gHeight]) {
 	// get where it will land if it falls straight down.
 	settledY = -2;
 	int cy = y;
@@ -49,9 +49,9 @@ void shape::gravity(optional<tile> history[][gHeight]) {
 	settledY += y + 2; // + 2 to account for starting point
 }
 
-bool shape::shift(shiftDir LR, optional<tile> history[][gHeight]) {
+bool Shape::shift(shiftDir LR, optional<Tile> history[][gHeight]) {
 	x += LR;
-	for (tile t : tiles) {
+	for (Tile t : tiles) {
 		int tx = x + t.ox;
 		int ty = y + t.oy;
 		if (tx < 0 || tx == gWidth || (ty > 0 && history[tx][ty].has_value())) {
@@ -62,7 +62,7 @@ bool shape::shift(shiftDir LR, optional<tile> history[][gHeight]) {
 	return true;
 }
 
-void shape::pivot(optional<tile> history[][gHeight]) {
+void Shape::pivot(optional<Tile> history[][gHeight]) {
 	vector<pair<int, int>> newPos;
 	for (int i = 1; i < tiles.size(); i++) {
 		int newOX = -tiles[i].oy;
@@ -99,15 +99,15 @@ void shape::pivot(optional<tile> history[][gHeight]) {
 	wrapNum(&rotation, 0, 4);
 }
 
-void shape::draw() {
+void Shape::draw() {
 	for (int i = 0; i < tiles.size(); i++) {
 		tiles[i].rawDraw(x + tiles[i].ox, y + tiles[i].oy);
 	}
 }
 
-class tShape : public shape {
+class tShape : public Shape {
 public:
-	tShape() : shape(-0.5, -0.5) {
+	tShape() : Shape(-0.5, -0.5) {
 		this->tiles.emplace_back( 0, 0, PURPLE);
 		this->tiles.emplace_back(-1, 0, PURPLE);
 		this->tiles.emplace_back( 1, 0, PURPLE);
@@ -115,9 +115,9 @@ public:
 	}
 };
 
-class oShape : public shape {
+class oShape : public Shape {
 public:
-	oShape() : shape(-1, -1.5) {
+	oShape() : Shape(-1, -1.5) {
 		this->tiles.emplace_back( 0, 0, YELLOW);
 		this->tiles.emplace_back( 1, 0, YELLOW);
 		this->tiles.emplace_back( 0, 1, YELLOW);
@@ -125,9 +125,9 @@ public:
 	}
 };
 
-class iShape : public shape {
+class iShape : public Shape {
 public:
-	iShape() : shape(-1, -1) {
+	iShape() : Shape(-1, -1) {
 		this->tiles.emplace_back( 0, 0, SKYBLUE);
 		this->tiles.emplace_back(-1, 0, SKYBLUE);
 		this->tiles.emplace_back( 1, 0, SKYBLUE);
@@ -135,9 +135,9 @@ public:
 	}
 };
 
-class sShape : public shape {
+class sShape : public Shape {
 public:
-	sShape() : shape(-0.5, -1.5) {
+	sShape() : Shape(-0.5, -1.5) {
 		this->tiles.emplace_back( 0, 0, LIME);
 		this->tiles.emplace_back( 1, 0, LIME);
 		this->tiles.emplace_back( 0, 1, LIME);
@@ -145,9 +145,9 @@ public:
 	}
 };
 
-class zShape : public shape {
+class zShape : public Shape {
 public:
-	zShape() : shape(-0.5, -1.5) {
+	zShape() : Shape(-0.5, -1.5) {
 		this->tiles.emplace_back( 0, 0, RED);
 		this->tiles.emplace_back(-1, 0, RED);
 		this->tiles.emplace_back( 0, 1, RED);
@@ -155,9 +155,9 @@ public:
 	}
 };
 
-class lShape : public shape {
+class lShape : public Shape {
 public:
-	lShape() : shape(0.5, -0.5) {
+	lShape() : Shape(0.5, -0.5) {
 		this->tiles.emplace_back( 0, 0, ORANGE);
 		this->tiles.emplace_back(-1, 0, ORANGE);
 		this->tiles.emplace_back(-2, 0, ORANGE);
@@ -165,9 +165,9 @@ public:
 	}
 };
 
-class jShape : public shape {
+class jShape : public Shape {
 public:
-	jShape() : shape(-1.5, -0.5) {
+	jShape() : Shape(-1.5, -0.5) {
 		this->tiles.emplace_back( 0, 0, BLUE);
 		this->tiles.emplace_back( 0,-1, BLUE);
 		this->tiles.emplace_back( 1, 0, BLUE);
@@ -176,11 +176,11 @@ public:
 };
 
 template<typename T>
-shape *createPiece() {
+Shape *createPiece() {
 	return new T();
 }
 
-typedef shape *(*CreatePieceFn)();
+typedef Shape *(*CreatePieceFn)();
 const CreatePieceFn createFunctions[] = {
 	[T_SHAPE] = &createPiece<tShape>,
 	[O_SHAPE] = &createPiece<oShape>,
@@ -195,19 +195,19 @@ static_assert(
 	"Number of create piece functions does not match number of shapes in enum"
 );
 
-shape *randomPiece(optional<tile> history[][gHeight]) {
+Shape *randomPiece(optional<Tile> history[][gHeight]) {
 	static random_device rd;
 	static mt19937 rng(rd());
 	static uniform_int_distribution<int> uni(0, N_SHAPES-1);
 
-	shape *piece = createFunctions[uni(rng)]();
+	Shape *piece = createFunctions[uni(rng)]();
 
 	return piece;
 }
 
 
 
-game::game() {
+Game::Game() {
 	for (int i = 0; i < 4; i++)
 		currentPiece[i] = randomPiece(history);
 	currentPiece[0]->gravity(history);
@@ -220,19 +220,19 @@ game::game() {
 
 }
 
-bool game::isOccupied(int x, int y) {
+bool Game::isOccupied(int x, int y) {
 	if (x < 0 || x >= gWidth || y >= gHeight) return true;
 	return history[x][y].has_value();
 }
 
-bool game::rowCompleted(int y) {
+bool Game::rowCompleted(int y) {
 	for (int x = 0; x < gWidth; x++) {
 		if (!isOccupied(x, y))
 			return false;
 	}
 	return true;
 }
-bool game::removeRow(int y) {
+bool Game::removeRow(int y) {
 	for (int i = y; i > 0; i--) {
 		for (int x = 0; x < gWidth; x++) {
 			history[x][i] = history[x][i-1];
@@ -243,7 +243,7 @@ bool game::removeRow(int y) {
 	}
 	return true;
 }
-void game::removeCompleted() {
+void Game::removeCompleted() {
 	// use when wanting to reduce all complete rows
 	state = UNPAUSED;
 	for (int row : completedRows) {
@@ -254,7 +254,7 @@ void game::removeCompleted() {
 }
 
 // true if game continues, or false if gameover
-bool game::step() { 
+bool Game::step() { 
 	if (currentPiece[0]->step(history)) return true; // if can move down
 	static const int scoreMap[5] = {
 		0, 100, 400, 900, 2000
@@ -295,20 +295,20 @@ bool game::step() {
 	return true;
 }
 
-void game::shift(shiftDir LR) {
+void Game::shift(shiftDir LR) {
 	currentPiece[0]->shift(LR, history);
 	currentPiece[0]->gravity(history);
 }
 
-void game::pivot() {
+void Game::pivot() {
 	currentPiece[0]->pivot(history);
 	currentPiece[0]->gravity(history);
 }
 
-void game::holdSwap() {
+void Game::holdSwap() {
 	if (tilesDropped == tilesDroppedHolding) return; // disallow swapping to buy time
 	tilesDroppedHolding = tilesDropped;
-	shape *cache = holding;
+	Shape *cache = holding;
 	holding = currentPiece[0];
 
 	// ensure original rotation - prefers wider than taller
@@ -325,11 +325,11 @@ void game::holdSwap() {
 	currentPiece[0]->gravity(history);
 }
 
-const tile& game::tileAt(int x, int y) {
+const Tile& Game::tileAt(int x, int y) {
 	// assumes that x, y is within bounds
 	return this->history[x][y].value();
 }
 
-void game::gravity() {
+void Game::gravity() {
 	currentPiece[0]->gravity(history);
 }

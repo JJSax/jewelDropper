@@ -22,7 +22,7 @@ const int cx = sidebarWidth/2;
 Gamestate previousState = UNPAUSED;
 
 
-bool testButton(game& g, Gamestate previous, int measure, int x) {
+bool testButton(Game& g, Gamestate previous, int measure, int x) {
 	static int boardW = cellSize * gWidth;
 	static int font = 40;
 	return (IsMouseButtonPressed(0)
@@ -30,7 +30,7 @@ bool testButton(game& g, Gamestate previous, int measure, int x) {
 	&& GetMouseY() > 15 && GetMouseY() < 15 + font);
 }
 
-void drawGUIPanel(game& g) {
+void drawGUIPanel(Game& g) {
 	DrawOutlineRectangle(buttonQuad, 3, GRAY, DARKGRAY);
 	static int font = 40;
 	static int up = MeasureText("Unpause", font);
@@ -77,7 +77,7 @@ void drawGUIPanel(game& g) {
 			if (testButton(g, previousState, rp, x)) {
 				g.state = UNPAUSED;
 				previousState = UNPAUSED;
-				g = game();
+				g = Game();
 			}
 			txt = "Replay";
 			break;
@@ -88,7 +88,7 @@ void drawGUIPanel(game& g) {
 	ShadowText(txt, x, 18, font, SKYBLUE);
 }
 
-void drawScore(game& g) {
+void drawScore(Game& g) {
 	DrawOutlineRectangle(scoreQuad, 3, GRAY, DARKGRAY);
 	// DrawRoundedOutlineRect(scoreQuad, 3, roundness, GRAY, BLACK);
 	const char *str = TextFormat("%i", g.score);
@@ -99,7 +99,7 @@ void drawScore(game& g) {
 	ShadowText(str, sidebarWidth/2 - tw/2, foreheadH + 60, 30, BLUE);
 }
 
-void drawHold(game& g) {
+void drawHold(Game& g) {
 	DrawOutlineRectangle(holdQuad, 3, GRAY, DARKGRAY);
 	// DrawRoundedOutlineRect(holdQuad, 3, roundness, GRAY, BLACK);
 	static const char *hold = "HOLD";
@@ -109,7 +109,7 @@ void drawHold(game& g) {
 	DrawOutlineRectangle(holdQuad.x + mGap, holdQuad.y + 30, holdQuad.width - mGap*2, holdQuad.height - 20 - mGap, 4, BLACK, DARKGRAY);
 	if (!g.holding) return;
 	int cy = holdQuad.y + holdQuad.height/2 + 30;
-	for (tile t : g.holding->tiles) {
+	for (Tile t : g.holding->tiles) {
 		DrawOutlineRectangle(
 			cx + g.holding->midx * cellSize + t.ox * cellSize,
 			cy + g.holding->midy * cellSize + t.oy * cellSize,
@@ -119,7 +119,7 @@ void drawHold(game& g) {
 	}
 }
 
-void drawQueue(game& g) {
+void drawQueue(Game& g) {
 	static Rectangle futureQuad = {
 		gap, holdQuad.y + scoreQuad.height,
 		sidebarWidth - gap * 2, GetScreenHeight() - holdQuad.y - holdQuad.height - gap
@@ -137,7 +137,7 @@ void drawQueue(game& g) {
 		int cy = futureQuad.y + i * pieceGap + cellSize;
 		float ox = g.currentPiece[i]->midx;
 		float oy = g.currentPiece[i]->midy;
-		for (tile t : g.currentPiece[i]->tiles) { // tiles
+		for (Tile t : g.currentPiece[i]->tiles) { // tiles
 			DrawOutlineRectangle(
 				cx + ox * cellSize + t.ox * cellSize,
 				cy + oy * cellSize + t.oy * cellSize,
@@ -149,7 +149,7 @@ void drawQueue(game& g) {
 }
 
 
-void drawSidebar(game& g) {
+void drawSidebar(Game& g) {
 	BeginMode2D(sideBarTranslation);
 
 	drawGUIPanel(g);

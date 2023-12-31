@@ -24,12 +24,12 @@ VariableGroup blinkTime = 4.0f; // will be reduced by dt * 4.  two on/off cycle 
 
 using namespace std;
 
-void dostep(game& g) {
+void dostep(Game& g) {
 	if (g.step()) return;
 	g.state = GAMEOVER;
 }
 
-void update(game& g) {
+void update(Game& g) {
 	if (g.state == REDUCINGROWS) { // if row animation is playing
 		reduceTime -= GetFrameTime();
 		blinkTime -= GetFrameTime() * 4;
@@ -92,7 +92,7 @@ void update(game& g) {
 }
 
 
-void drawTiles(game& g) {
+void drawTiles(Game& g) {
 	for (int y = 0; y < gHeight; y++) {
 		for (int x = 0; x < gWidth; x++) {
 			DrawRectangleLines(x * cellSize, y * cellSize, cellSize, cellSize, WHITE);
@@ -121,7 +121,7 @@ void drawTiles(game& g) {
 
 int main(void) {
 
-	game g;
+	Game g;
 	static float foreheadH = cellSize * 4;
 	Camera2D camera;
 	camera.offset = (Vector2) {0, foreheadH};

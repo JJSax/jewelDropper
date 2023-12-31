@@ -14,38 +14,33 @@ enum shiftDir {
 	RIGHT = 1
 };
 
-struct tile {
+class Tile {
+public:
 	int ox; // offset from host shape x
 	int oy; // offset from host shape y
 	Color color;
 
-	tile(int x, int y, Color col) :
-		ox(x),
-		oy(y),
-		color(col) {
-		// Additional initialization if needed
-	}
+	Tile(int x, int y, Color col) : ox(x), oy(y), color(col) {}
 
 	void rawDraw(int x, int y) const {
 		DrawRectangle(x * cellSize + 2, y * cellSize + 2, cellSize - 4, cellSize - 4, color);
 		DrawRectangleLines(x * cellSize + 2, y * cellSize + 2, cellSize - 4, cellSize - 4, BLACK);
 	}
 };
-
-class shape {
+class Shape {
 public:
 	int x, y;
 	bool settled;
-	std::vector<tile> tiles;
+	std::vector<Tile> tiles;
 	int settledY;
 	int rotation = 0;
 	const float midx, midy;
 
-	shape(float midX, float midY);
-	bool step(std::optional<tile> history[][gHeight]);
-	bool shift(shiftDir LR, std::optional<tile> history[][gHeight]);
-	void pivot(std::optional<tile> history[][gHeight]);
-	void gravity(std::optional<tile> history[][gHeight]);
+	Shape(float midX, float midY);
+	bool step(std::optional<Tile> history[][gHeight]);
+	bool shift(shiftDir LR, std::optional<Tile> history[][gHeight]);
+	void pivot(std::optional<Tile> history[][gHeight]);
+	void gravity(std::optional<Tile> history[][gHeight]);
 	void draw();
 };
 
@@ -56,22 +51,22 @@ enum Gamestate {
 	REDUCINGROWS
 };
 
-class game {
-	std::optional<tile> history[gWidth][gHeight];
+class Game {
+	std::optional<Tile> history[gWidth][gHeight];
 	bool rowCompleted(int y);
 	bool removeRow(int y);
 
 public:
-	game();
-	shape *currentPiece[4];
-	shape *holding;
+	Game();
+	Shape *currentPiece[4];
+	Shape *holding;
 	Gamestate state = UNPAUSED;
 	int score;
 	int tilesDropped = 0;
 	int tilesDroppedHolding;
 	std::set<int> completedRows;
 	bool isOccupied(int x, int y);
-	const tile& tileAt(int x, int y);
+	const Tile& tileAt(int x, int y);
 	bool step(); // Also settles pieces and generates a new one when doing so
 	void shift(shiftDir LR);
 	void pivot();
