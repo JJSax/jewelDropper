@@ -140,7 +140,6 @@ void Game::holdSwap() {
 	if (!currentPiece[0])
 		shiftQueue();
 
-
 	currentPiece[0]->x = 4;
 	currentPiece[0]->y = -2;
 	currentPiece[0]->gravity(history);

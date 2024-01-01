@@ -76,7 +76,7 @@ void update(Game& g) {
 		float y = static_cast<float>(g.currentPiece[0]->y * cellSize + cellSize);
 		float h = static_cast<float>(g.currentPiece[0]->settledY * cellSize - g.currentPiece[0]->y * cellSize);
 		Rectangle rect = {
-			l - 5, y,
+			l + 5, y,
 			r - l - 10,
 			h
 		};
