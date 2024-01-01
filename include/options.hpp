@@ -5,6 +5,7 @@
 constexpr int gWidth = 10;
 constexpr int gHeight = 18;
 constexpr int cellSize = 30;
+const float foreheadH = cellSize * 4;
 
 extern VariableGroup dropTime; // time to drop one space
 extern VariableGroup holdDropTime;

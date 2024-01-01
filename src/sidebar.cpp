@@ -1,7 +1,7 @@
 
 #include "sidebar.hpp"
+#include "options.hpp"
 
-const float foreheadH = cellSize * 4;
 const int gap = 5;
 const int font = 40;
 const Color SLATEGRAY {90, 118, 154, 255};

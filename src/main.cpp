@@ -8,12 +8,12 @@
 
 
 /*
-TODO add vfx to Slam
 IDEA occasional 'powerup' empty points in history that do things
 	perhaps some can be good or bad, like hitting it forces a slam, but is worth a lot more points
 */
 
 using namespace std;
+
 vector<Rectangle> slams;
 vector<float> slamAlpha;
 
@@ -123,10 +123,33 @@ void drawTiles(Game& g) {
 	g.currentPiece[0]->draw();
 }
 
+void drawGame(Game& g) {
+	if (g.state == PAUSED) {
+		DrawRectangle(0, -foreheadH, gWidth * cellSize, GetScreenHeight(), BLACK);
+		static const int pd = MeasureText("PAUSED", 40);
+		DrawText("PAUSED", gWidth * cellSize/2 - pd/2, GetScreenHeight() / 4, 40, WHITE);
+		return;
+	}
+
+	// Draw Slam Animation
+	for (int i = slams.size()-1; i >= 0; i--) { // reverse to avoid erase bug
+		Rectangle r = slams[i];
+		DrawRectangleGradientV(
+			r.x, r.y, r.width, r.height, BLANK, Fade(GRAY, slamAlpha[i])
+		);
+		slamAlpha[i] -= GetFrameTime() * 2;
+		if (slamAlpha[i] <= 0) {
+			slams.erase(slams.begin() + i);
+			slamAlpha.erase(slamAlpha.begin() + i);
+		}
+	}
+	
+	drawTiles(g);
+}
+
 int main(void) {
 
 	Game g;
-	static float foreheadH = cellSize * 4;
 	Camera2D camera;
 	camera.offset = (Vector2) {0, foreheadH};
 	camera.target = (Vector2) {0, 0};
@@ -150,25 +173,7 @@ int main(void) {
 		BeginDrawing();
 		BeginMode2D(camera);
 		ClearBackground(BLACK);
-		if (g.state == PAUSED) {
-			DrawRectangle(0, -foreheadH, gWidth * cellSize, GetScreenHeight(), BLACK);
-			static const int pd = MeasureText("PAUSED", 40);
-			DrawText("PAUSED", gWidth * cellSize/2 - pd/2, GetScreenHeight() / 4, 40, WHITE);
-		}
-		else {
-			for (int i = slams.size()-1; i >= 0; i--) { // reverse to avoid erase bug
-				Rectangle r = slams[i];
-				DrawRectangleGradientV(
-					r.x, r.y, r.width, r.height, BLANK, Fade(GRAY, slamAlpha[i])
-				);
-				slamAlpha[i] -= GetFrameTime() * 2;
-				if (slamAlpha[i] <= 0) {
-					slams.erase(slams.begin() + i);
-					slamAlpha.erase(slamAlpha.begin() + i);
-				}
-			}
-			drawTiles(g);
-		}
+		drawGame(g);
 
 		if (g.state == GAMEOVER) {
 			int sw = GetScreenWidth() - sidebarWidth;
