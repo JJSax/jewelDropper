@@ -1,13 +1,16 @@
 
 #include <raylib.h>
 #include <vector>
+#include <iostream>
 
 #include "jeweldrop.hpp"
 #include "sidebar.hpp"
 #include "mergeify.hpp"
-
+#include "keybinds.hpp"
+#include "options.hpp"
 
 /*
+! Fix first hold not shifting queue
 IDEA occasional 'powerup' empty points in history that do things
 	perhaps some can be good or bad, like hitting it forces a slam, but is worth a lot more points
 */
@@ -33,15 +36,16 @@ void update(Game& g) {
 		return;
 	}
 
-	if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
+	if (keyMapper.IsKeybindPressed(Keybinds::SHIFTLEFT)) {
 		g.shift(LEFT);
 		holdShiftTime.multReset(4);
 	}
-	if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) {
+	if (keyMapper.IsKeybindPressed(Keybinds::SHIFTRIGHT)) {
 		g.shift(RIGHT);
 		holdShiftTime.multReset(4);
 	}
-	bool l = IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A), r = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D);
+	bool l = keyMapper.IsKeybindDown(Keybinds::SHIFTLEFT);
+	bool r = keyMapper.IsKeybindDown(Keybinds::SHIFTRIGHT);
 	if (l || r) {
 		holdShiftTime -= GetFrameTime();
 		if (holdShiftTime <= 0) {
@@ -50,14 +54,14 @@ void update(Game& g) {
 				g.shift(l ? LEFT : RIGHT);
 		}
 	}
-	if (IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))
+	if (keyMapper.IsKeybindPressed(Keybinds::PIVOT))
 		g.pivot();
-	if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) {
+	if (keyMapper.IsKeybindPressed(Keybinds::STEP)) {
 		holdDropTime.multReset(4);
 		dropTime.reset();
 		dostep(g);
 	}
-	if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
+	if (keyMapper.IsKeybindDown(Keybinds::STEP)) {
 		holdDropTime -= GetFrameTime();
 		if (holdDropTime <= 0) {
 			g.score++;
@@ -67,7 +71,7 @@ void update(Game& g) {
 		}
 	}
 
-	if (IsKeyPressed(KEY_SPACE)) {
+	if (keyMapper.IsKeybindPressed(Keybinds::SLAM)) {
 		float l = static_cast<float>(g.currentPiece[0]->getLeft() * cellSize);
 		float r = static_cast<float>(g.currentPiece[0]->getRight() * cellSize);
 		float y = static_cast<float>(g.currentPiece[0]->y * cellSize + cellSize);
@@ -90,7 +94,7 @@ void update(Game& g) {
 		dostep(g);
 	}
 
-	if (IsKeyPressed(KEY_C)) {
+	if (keyMapper.IsKeybindPressed(Keybinds::SWAPHOLD)) {
 		g.holdSwap();
 	}
 }
@@ -143,7 +147,7 @@ void drawGame(Game& g) {
 			slamAlpha.erase(slamAlpha.begin() + i);
 		}
 	}
-	
+
 	drawTiles(g);
 }
 
@@ -160,6 +164,7 @@ int main(void) {
 
 	InitAudioDevice();
 	loadJD();
+	loadOptions();
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
 
