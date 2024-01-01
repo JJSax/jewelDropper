@@ -9,18 +9,13 @@
 #include "jeweldrop.hpp"
 #include "sidebar.hpp"
 #include "mergeify.hpp"
+#include "enums.hpp"
 
 /*
 TODO add vfx to Slam
 IDEA occasional 'powerup' empty points in history that do things
 	perhaps some can be good or bad, like hitting it forces a slam, but is worth a lot more points
 */
-
-VariableGroup dropTime = 0.75f; // time to drop one space
-VariableGroup holdDropTime = 0.06f;
-VariableGroup holdShiftTime = 0.05f;
-VariableGroup reduceTime = 1.0f;
-VariableGroup blinkTime = 4.0f; // will be reduced by dt * 4.  two on/off cycle per second
 
 using namespace std;
 

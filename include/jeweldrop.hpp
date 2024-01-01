@@ -5,55 +5,14 @@
 #include <vector>
 #include <set>
 
-constexpr int gWidth = 10;
-constexpr int gHeight = 18;
-constexpr int cellSize = 30;
+#include "options.hpp"
+#include "shape.hpp"
+#include "enums.hpp"
 
-enum shiftDir {
-	LEFT = -1,
-	RIGHT = 1
-};
-
-extern Texture2D jewel;
 void loadJD();
 void unloadJD();
 void updateJD();
 
-class Tile {
-public:
-	int ox; // offset from host shape x
-	int oy; // offset from host shape y
-	Color color;
-
-	Tile(int x, int y, Color col) : ox(x), oy(y), color(col) {}
-
-	void rawDraw(int x, int y) const {
-		float dx = x * cellSize + 2;
-		float dy = y * cellSize + 2;
-		float scale = static_cast<float>(cellSize - 4) / jewel.height;
-		Vector2 pos { dx, dy };
-		DrawRectangle(pos.x, pos.y, cellSize - 4, cellSize - 4, color);
-		DrawRectangleLines(pos.x, pos.y, cellSize - 4, cellSize - 4, BLACK);
-		DrawTextureEx(jewel, pos, 0, scale, GRAY);
-	}
-};
-
-class Shape {
-public:
-	int x, y;
-	bool settled;
-	std::vector<Tile> tiles;
-	int settledY;
-	int rotation = 0;
-	const float midx, midy;
-
-	Shape(float midX, float midY);
-	bool step(std::optional<Tile> history[][gHeight]);
-	bool shift(shiftDir LR, std::optional<Tile> history[][gHeight]);
-	void pivot(std::optional<Tile> history[][gHeight]);
-	void gravity(std::optional<Tile> history[][gHeight]);
-	void draw();
-};
 
 enum Gamestate {
 	PAUSED,
