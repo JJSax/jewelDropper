@@ -33,7 +33,7 @@ Game::Game() {
 	state = UNPAUSED;
 	score = 0;
 	tilesDropped = 0;
-	tilesDroppedHolding = 0;
+	tilesDroppedHolding = -1;
 
 }
 
