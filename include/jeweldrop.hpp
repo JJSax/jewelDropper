@@ -23,6 +23,7 @@ class Game {
 	std::optional<Tile> history[gWidth][gHeight];
 	bool rowCompleted(int y);
 	bool removeRow(int y);
+	void shiftQueue();
 
 public:
 	Game();

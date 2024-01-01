@@ -8,14 +8,14 @@ using namespace std;
 
 Texture2D jewel;
 Music music;
-void loadJD() { 
-	jewel = LoadTexture("assets/jewel.png"); 
+void loadJD() {
+	jewel = LoadTexture("assets/jewel.png");
 	music = LoadMusicStream("assets/Twister_Tetris.mp3");
 	PlayMusicStream(music);
 	SetMusicVolume(music, musicVolume);
 }
-void unloadJD() { 
-	UnloadTexture(jewel); 
+void unloadJD() {
+	UnloadTexture(jewel);
 	UnloadMusicStream(music);
 }
 void updateJD() {
@@ -69,6 +69,14 @@ void Game::removeCompleted() {
 	gravity();
 }
 
+void Game::shiftQueue() {
+	for (int i = 1; i < 4; i++) // push shapes up in the queue
+		currentPiece[i-1] = currentPiece[i];
+
+	currentPiece[0]->gravity(history);
+	currentPiece[3] = randomPiece(history);
+}
+
 // true if game continues, or false if gameover
 bool Game::step() {
 	if (currentPiece[0]->step(history)) return true; // if can move down
@@ -101,11 +109,7 @@ bool Game::step() {
 	score += scoreMap[tRows];
 
 	delete currentPiece[0];
-	for (int i = 1; i < 4; i++) // push shapes up in the queue
-		currentPiece[i-1] = currentPiece[i];
-
-	currentPiece[0]->gravity(history);
-	currentPiece[3] = randomPiece(history);
+	shiftQueue();
 
 	tilesDropped++;
 	return true;
@@ -134,7 +138,8 @@ void Game::holdSwap() {
 
 	currentPiece[0] = cache;
 	if (!currentPiece[0])
-		currentPiece[0] = randomPiece(history);
+		shiftQueue();
+
 
 	currentPiece[0]->x = 4;
 	currentPiece[0]->y = -2;

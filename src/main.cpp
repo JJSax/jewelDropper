@@ -10,7 +10,6 @@
 #include "options.hpp"
 
 /*
-! Fix first hold not shifting queue
 IDEA occasional 'powerup' empty points in history that do things
 	perhaps some can be good or bad, like hitting it forces a slam, but is worth a lot more points
 */
