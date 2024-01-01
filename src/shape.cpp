@@ -20,10 +20,9 @@ enum classShapeTypes {
 };
 
 Shape::Shape(float midX, float midY): midx(midX), midy(midY) {
-	this->x = 4;
-	this->y = -2;
-	this->settled = false;
-	this->settledY = -2;
+	x = 4;
+	y = -2;
+	settledY = -2;
 }
 
 // return true if can step down, false if not.
@@ -108,73 +107,86 @@ void Shape::draw() {
 	}
 }
 
+int Shape::getLeft() { //? consider caching this on creation/pivot/shift etc.
+	short int tx = 5;
+	for (Tile t: tiles) { if (t.ox < tx) tx = t.ox; }
+	return x + tx;
+}
+int Shape::getRight() { //? consider caching this on creation/pivot/shift etc.
+	short int tx = -5;
+	for (Tile t: tiles) { if (t.ox > tx) tx = t.ox; }
+	return x + tx + 1;
+}
+
+
+
 class tShape : public Shape {
 public:
 	tShape() : Shape(-0.5, -0.5) {
-		this->tiles.emplace_back( 0, 0, PURPLE);
-		this->tiles.emplace_back(-1, 0, PURPLE);
-		this->tiles.emplace_back( 1, 0, PURPLE);
-		this->tiles.emplace_back( 0,-1, PURPLE);
+		tiles.emplace_back( 0, 0, PURPLE);
+		tiles.emplace_back(-1, 0, PURPLE);
+		tiles.emplace_back( 1, 0, PURPLE);
+		tiles.emplace_back( 0,-1, PURPLE);
 	}
 };
 
 class oShape : public Shape {
 public:
 	oShape() : Shape(-1, -1.5) {
-		this->tiles.emplace_back( 0, 0, YELLOW);
-		this->tiles.emplace_back( 1, 0, YELLOW);
-		this->tiles.emplace_back( 0, 1, YELLOW);
-		this->tiles.emplace_back( 1, 1, YELLOW);
+		tiles.emplace_back( 0, 0, YELLOW);
+		tiles.emplace_back( 1, 0, YELLOW);
+		tiles.emplace_back( 0, 1, YELLOW);
+		tiles.emplace_back( 1, 1, YELLOW);
 	}
 };
 
 class iShape : public Shape {
 public:
 	iShape() : Shape(-1, -1) {
-		this->tiles.emplace_back( 0, 0, SKYBLUE);
-		this->tiles.emplace_back(-1, 0, SKYBLUE);
-		this->tiles.emplace_back( 1, 0, SKYBLUE);
-		this->tiles.emplace_back( 2, 0, SKYBLUE);
+		tiles.emplace_back( 0, 0, SKYBLUE);
+		tiles.emplace_back(-1, 0, SKYBLUE);
+		tiles.emplace_back( 1, 0, SKYBLUE);
+		tiles.emplace_back( 2, 0, SKYBLUE);
 	}
 };
 
 class sShape : public Shape {
 public:
 	sShape() : Shape(-0.5, -1.5) {
-		this->tiles.emplace_back( 0, 0, LIME);
-		this->tiles.emplace_back( 1, 0, LIME);
-		this->tiles.emplace_back( 0, 1, LIME);
-		this->tiles.emplace_back(-1, 1, LIME);
+		tiles.emplace_back( 0, 0, LIME);
+		tiles.emplace_back( 1, 0, LIME);
+		tiles.emplace_back( 0, 1, LIME);
+		tiles.emplace_back(-1, 1, LIME);
 	}
 };
 
 class zShape : public Shape {
 public:
 	zShape() : Shape(-0.5, -1.5) {
-		this->tiles.emplace_back( 0, 0, RED);
-		this->tiles.emplace_back(-1, 0, RED);
-		this->tiles.emplace_back( 0, 1, RED);
-		this->tiles.emplace_back( 1, 1, RED);
+		tiles.emplace_back( 0, 0, RED);
+		tiles.emplace_back(-1, 0, RED);
+		tiles.emplace_back( 0, 1, RED);
+		tiles.emplace_back( 1, 1, RED);
 	}
 };
 
 class lShape : public Shape {
 public:
 	lShape() : Shape(0.5, -0.5) {
-		this->tiles.emplace_back( 0, 0, ORANGE);
-		this->tiles.emplace_back(-1, 0, ORANGE);
-		this->tiles.emplace_back(-2, 0, ORANGE);
-		this->tiles.emplace_back( 0,-1, ORANGE);
+		tiles.emplace_back( 0, 0, ORANGE);
+		tiles.emplace_back(-1, 0, ORANGE);
+		tiles.emplace_back(-2, 0, ORANGE);
+		tiles.emplace_back( 0,-1, ORANGE);
 	}
 };
 
 class jShape : public Shape {
 public:
 	jShape() : Shape(-1.5, -0.5) {
-		this->tiles.emplace_back( 0, 0, BLUE);
-		this->tiles.emplace_back( 0,-1, BLUE);
-		this->tiles.emplace_back( 1, 0, BLUE);
-		this->tiles.emplace_back( 2, 0, BLUE);
+		tiles.emplace_back( 0, 0, BLUE);
+		tiles.emplace_back( 0,-1, BLUE);
+		tiles.emplace_back( 1, 0, BLUE);
+		tiles.emplace_back( 2, 0, BLUE);
 	}
 };
 

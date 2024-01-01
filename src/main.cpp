@@ -1,5 +1,6 @@
 
 #include <raylib.h>
+#include <vector>
 
 #include "jeweldrop.hpp"
 #include "sidebar.hpp"
@@ -13,6 +14,8 @@ IDEA occasional 'powerup' empty points in history that do things
 */
 
 using namespace std;
+vector<Rectangle> slams;
+vector<float> slamAlpha;
 
 void dostep(Game& g) {
 	if (g.step()) return;
@@ -28,7 +31,7 @@ void update(Game& g) {
 		blinkTime.reset();
 		g.removeCompleted();
 		return;
-	};
+	}
 
 	if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
 		g.shift(LEFT);
@@ -65,6 +68,17 @@ void update(Game& g) {
 	}
 
 	if (IsKeyPressed(KEY_SPACE)) {
+		float l = static_cast<float>(g.currentPiece[0]->getLeft() * cellSize);
+		float r = static_cast<float>(g.currentPiece[0]->getRight() * cellSize);
+		float y = static_cast<float>(g.currentPiece[0]->y * cellSize + cellSize);
+		float h = static_cast<float>(g.currentPiece[0]->settledY * cellSize - g.currentPiece[0]->y * cellSize);
+		Rectangle rect = {
+			l - 5, y,
+			r - l - 10,
+			h
+		};
+		slams.emplace_back(rect);
+		slamAlpha.emplace_back(1.0f);
 		g.score += (g.currentPiece[0]->settledY - g.currentPiece[0]->y) * 3;
 		g.currentPiece[0]->y = g.currentPiece[0]->settledY;
 		dostep(g);
@@ -142,6 +156,17 @@ int main(void) {
 			DrawText("PAUSED", gWidth * cellSize/2 - pd/2, GetScreenHeight() / 4, 40, WHITE);
 		}
 		else {
+			for (int i = slams.size()-1; i >= 0; i--) { // reverse to avoid erase bug
+				Rectangle r = slams[i];
+				DrawRectangleGradientV(
+					r.x, r.y, r.width, r.height, BLANK, Fade(GRAY, slamAlpha[i])
+				);
+				slamAlpha[i] -= GetFrameTime() * 2;
+				if (slamAlpha[i] <= 0) {
+					slams.erase(slams.begin() + i);
+					slamAlpha.erase(slamAlpha.begin() + i);
+				}
+			}
 			drawTiles(g);
 		}
 

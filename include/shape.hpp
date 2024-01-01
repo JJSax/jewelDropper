@@ -30,8 +30,7 @@ public:
 
 class Shape {
 public:
-	int x, y;
-	bool settled;
+	short int x, y;
 	std::vector<Tile> tiles;
 	int settledY;
 	int rotation = 0;
@@ -43,6 +42,8 @@ public:
 	void pivot(std::optional<Tile> history[][gHeight]);
 	void gravity(std::optional<Tile> history[][gHeight]);
 	void draw();
+	int getLeft();
+	int getRight();
 };
 
 Shape *randomPiece(std::optional<Tile> history[][gHeight]);
