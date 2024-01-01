@@ -2,10 +2,9 @@
 #include "jeweldrop.hpp"
 #include "shape.hpp"
 #include "enums.hpp"
+#include "options.hpp"
 
 using namespace std;
-
-
 
 Texture2D jewel;
 Music music;
@@ -13,7 +12,7 @@ void loadJD() {
 	jewel = LoadTexture("assets/jewel.png"); 
 	music = LoadMusicStream("assets/Twister_Tetris.mp3");
 	PlayMusicStream(music);
-	SetMusicVolume(music, 0.5);
+	SetMusicVolume(music, musicVolume);
 }
 void unloadJD() { 
 	UnloadTexture(jewel); 
