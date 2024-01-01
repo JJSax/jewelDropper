@@ -1,15 +1,10 @@
 
 #include <raylib.h>
-#include <cstdio>
-#include <optional>
-#include <vector>
-#include <iostream>
-#include <string>
 
 #include "jeweldrop.hpp"
 #include "sidebar.hpp"
 #include "mergeify.hpp"
-#include "enums.hpp"
+
 
 /*
 TODO add vfx to Slam

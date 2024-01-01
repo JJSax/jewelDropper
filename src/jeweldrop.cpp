@@ -1,8 +1,6 @@
-#include <random>
 
 #include "jeweldrop.hpp"
 #include "shape.hpp"
-#include "matris.hpp"
 #include "enums.hpp"
 
 using namespace std;

@@ -1,10 +1,9 @@
 
 #include "sidebar.hpp"
-#include "mergeify.hpp"
 
 const float foreheadH = cellSize * 4;
 const int gap = 5;
-const float roundness = 0.1f;
+const int font = 40;
 const Color SLATEGRAY {90, 118, 154, 255};
 const Color DARKSLATEGRAY = {60, 88, 104, 255};
 
@@ -24,7 +23,6 @@ Gamestate previousState = UNPAUSED;
 
 bool testButton(Game& g, Gamestate previous, int measure, int x) {
 	static int boardW = cellSize * gWidth;
-	static int font = 40;
 	return (IsMouseButtonPressed(0)
 	&& GetMouseX() > boardW + x && GetMouseX() < boardW + x + measure
 	&& GetMouseY() > 15 && GetMouseY() < 15 + font);
@@ -32,7 +30,6 @@ bool testButton(Game& g, Gamestate previous, int measure, int x) {
 
 void drawGUIPanel(Game& g) {
 	DrawOutlineRectangle(buttonQuad, 3, GRAY, DARKGRAY);
-	static int font = 40;
 	static int up = MeasureText("Unpause", font);
 	static int ps = MeasureText(  "Pause", font);
 	static int rp = MeasureText( "Replay", font);
@@ -90,7 +87,6 @@ void drawGUIPanel(Game& g) {
 
 void drawScore(Game& g) {
 	DrawOutlineRectangle(scoreQuad, 3, GRAY, DARKGRAY);
-	// DrawRoundedOutlineRect(scoreQuad, 3, roundness, GRAY, BLACK);
 	const char *str = TextFormat("%i", g.score);
 	static const char *scr = "Score";
 	int tw = MeasureText(scr, 40);
@@ -101,7 +97,6 @@ void drawScore(Game& g) {
 
 void drawHold(Game& g) {
 	DrawOutlineRectangle(holdQuad, 3, GRAY, DARKGRAY);
-	// DrawRoundedOutlineRect(holdQuad, 3, roundness, GRAY, BLACK);
 	static const char *hold = "HOLD";
 	int tw = MeasureText(hold, 30);
 	ShadowText(hold, holdQuad.x + holdQuad.width/2 - tw/2, holdQuad.y + 7, 30, BLUE);
@@ -125,7 +120,6 @@ void drawQueue(Game& g) {
 		sidebarWidth - gap * 2, GetScreenHeight() - holdQuad.y - holdQuad.height - gap
 	};
 	DrawOutlineRectangle(futureQuad, 3, GRAY, DARKGRAY);
-	// DrawRoundedOutlineRect(futureQuad, 3, roundness, GRAY, BLACK);
 	static const char *queue = "Queue";
 	static const int pieceGap = 80;
 	int tw = MeasureText(queue, 30);
